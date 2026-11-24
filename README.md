@@ -1,19 +1,38 @@
-# NIGA — Static preview
+# فروشگاه نیگا (NIGA Store)
 
-This repository contains a static HTML/CSS/JavaScript preview of the public-facing NIGA anime shop.
+نسخه فروشگاهی با رابط فارسی و راست‌چین، فرانت‌اند HTML/CSS/JavaScript و بک‌اند Java 21 + Spring Boot 4.0.10.
 
-## Files
-- `index.html`: homepage with products, gallery, about, FAQ and contact sections
-- `assets/css/style.css`: responsive styles
-- `assets/js/main.js`: mobile navigation, product search, demo cart and FAQ behavior
-- `assets/images/`: selected product images
-- `pages/`: reserved for future standalone pages
+## قابلیت‌ها
+- فهرست محصولات، جست‌وجو، دسته‌بندی و مرتب‌سازی
+- سبد خرید در مرورگر
+- ثبت‌نام و ورود با رمز عبور هش‌شده (BCrypt) و توکن دسترسی
+- ذخیره سفارش‌ها در دیتابیس و نمایش سفارش‌های مشتری
+- بخش مدیریت برای ساخت/ویرایش محصولات و تغییر وضعیت سفارش
+- ذخیره پیام‌های فرم تماس
+- PostgreSQL برای انتشار و H2 برای اجرای محلی
+- Dockerfile و Blueprint برای استقرار API روی Render
 
-## Publish with GitHub Pages
-Open **Settings → Pages**, select **Deploy from a branch**, choose branch `main` and folder `/ (root)`, then save. GitHub will show the published URL after deployment.
+## استقرار
+GitHub Pages فقط فرانت‌اند را اجرا می‌کند و Java را اجرا نمی‌کند. API باید جداگانه میزبانی شود. فایل backend/render.yaml برای شروع استقرار در Render قرار داده شده است. پس از انتشار API، آدرس آن را در assets/js/config.js داخل متغیر NIGA_API_BASE_URL قرار بده.
 
-## Limitations
-This is only a static front end. GitHub Pages does not run PHP or WordPress, so real login, checkout, order records, inventory, payment and administration are not available here. The cart and contact form are browser-only demonstrations. A live store needs WordPress/WooCommerce and a database on PHP/MySQL hosting.
+در تنظیمات سرویس Render، متغیرهای محرمانه ADMIN_EMAIL و ADMIN_PASSWORD را وارد کن تا حساب مدیر ساخته شود. برای JWT_SECRET مقدار تصادفی و محرمانه استفاده کن؛ مقدار پیش‌فرض فقط برای توسعه محلی است. FRONTEND_ORIGIN باید دامنه دقیق Pages باشد.
 
-## Security
-This repository is public. WordPress installation files, plugins, PHP theme source, SQL database, configuration, secrets, logs and order data have intentionally not been copied here.
+## اجرای محلی
+از پوشه backend دستور mvn spring-boot:run را اجرا کن. API در http://localhost:8080 اجرا می‌شود و از H2 حافظه‌ای استفاده می‌کند. فرانت‌اند را با یک وب‌سرور استاتیک اجرا کن و مقدار NIGA_API_BASE_URL را در assets/js/config.js روی http://localhost:8080 بگذار.
+
+## APIهای اصلی
+- GET /api/health
+- GET /api/products
+- POST /api/auth/register و POST /api/auth/login
+- GET /api/auth/me
+- POST /api/orders و GET /api/orders/me
+- GET /api/admin/orders
+- POST /api/admin/products، PUT /api/admin/products/{id}، DELETE /api/admin/products/{id}
+- PATCH /api/admin/orders/{id}/status
+- POST /api/contact
+
+## اطلاعات محصول
+در مخزن فعلی فقط دو محصول قابل‌شناسایی وجود داشت: قاب گوشی با قیمت ۵۵۰٬۰۰۰ تومان و پوستر بدون قیمت ثبت‌شده. قیمت پوستر عمداً صفر گذاشته شده تا قبل از تعیین قیمت، سفارش اشتباه ثبت نشود. تصاویر آرشیو در گالری حفظ شده‌اند؛ برای تبدیل آن‌ها به محصول قابل‌فروش، نام، قیمت و موجودی واقعی باید از پنل مدیریت وارد شوند.
+
+## پرداخت
+درگاه بانکی واقعی هنوز متصل نیست؛ این نسخه سفارش را در دیتابیس با وضعیت PENDING ثبت می‌کند. اتصال پرداخت آنلاین به حساب پذیرنده و کلیدهای رسمی درگاه نیاز دارد. هیچ اطلاعات پرداخت یا رمز بانکی را در مخزن ذخیره نکن.
