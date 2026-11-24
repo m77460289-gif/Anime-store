@@ -47,7 +47,7 @@ function load() {
 const clean = value => value == null ? "" : String(value).trim();
 const emailOk = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const safeUser = user => ({ id: user.id, name: user.name, email: user.email, role: user.role });
-const tokenFor = user => jwt.sign({ sub: user.id }, SECRET, { expiresIn: "12h" });
+const tokenFor = user => jwt.sign({ sub: String(user.id) }, SECRET, { expiresIn: "12h" });
 
 function createApp(db) {
   const app = express();
