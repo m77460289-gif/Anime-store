@@ -67,7 +67,8 @@ public class StoreController {
    Map<String,Object> item=new LinkedHashMap<>();item.put("id",productId);item.put("name",p.get("name"));item.put("image",p.get("image_url"));item.put("price",price);item.put("quantity",qty);checked.add(item);
   }
   KeyHolder kh=new GeneratedKeyHolder();
-  jdbc.update(conn->{PreparedStatement ps=conn.prepareStatement("INSERT INTO store_orders(user_id,customer_name,phone,address,note,total_toman,status) VALUES(?,?,?,?,?,?,'PENDING')",Statement.RETURN_GENERATED_KEYS);ps.setLong(1,userId);ps.setString(2,fullName);ps.setString(3,phone);ps.setString(4,address);ps.setString(5,note);ps.setLong(6,total);return ps;},kh);
+  final long orderTotal=total;
+  jdbc.update(conn->{PreparedStatement ps=conn.prepareStatement("INSERT INTO store_orders(user_id,customer_name,phone,address,note,total_toman,status) VALUES(?,?,?,?,?,?,'PENDING')",Statement.RETURN_GENERATED_KEYS);ps.setLong(1,userId);ps.setString(2,fullName);ps.setString(3,phone);ps.setString(4,address);ps.setString(5,note);ps.setLong(6,orderTotal);return ps;},kh);
   Number key=kh.getKey();if(key==null)throw new IllegalStateException("شناسه سفارش ساخته نشد.");long orderId=key.longValue();
   for(Map<String,Object> item:checked){
    long pid=((Number)item.get("id")).longValue();int qty=((Number)item.get("quantity")).intValue();
