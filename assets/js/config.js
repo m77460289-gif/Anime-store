@@ -1,2 +1,4 @@
-/* بعد از ساخت سرویس Java در Render، آدرس API را اینجا قرار بده؛ بدون / پایانی. */
-window.NIGA_API_BASE_URL = "";
+/* آدرس API در اجرای محلی به‌صورت خودکار تنظیم می‌شود. */
+window.NIGA_API_BASE_URL = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+  ? location.origin
+  : "";
