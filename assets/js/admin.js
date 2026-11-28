@@ -204,7 +204,7 @@
     const rows = reviews.slice().sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));
     target.innerHTML = rows.length ? rows.map(review => {
       const product = products.find(item => String(item.id) === String(review.productId));
-      return '<article class="admin-message"><div class="admin-message-head"><b>'+esc(review.name||"مشتری نیگا")+'</b><small>'+esc(product?.name||"محصول حذف‌شده")+'</small><span class="review-stars">'+("★".repeat(Math.max(0,Math.min(5,Number(review.rating)||0))))+'</span><button type="button" data-review-approve="'+esc(review.id)+'" data-approved="'+String(!!review.approved)+'">'+(review.approved?"برداشتن تأیید":"تأیید و انتشار")+'</button><button type="button" class="danger" data-delete-review="'+esc(review.id)+'">حذف نظر</button></div><p>'+esc(review.comment||"")+'</p></article>';
+      return '<article class="admin-message"><div class="admin-message-head"><b>'+esc(review.name||"مشتری نیگا")+'</b><small>'+esc(product?.name||"محصول حذف‌شده")+'</small><span class="review-stars">'+("★".repeat(Math.max(0,Math.min(5,Number(review.rating)||0))))+'</span></div><div class="review-actions"><button type="button" data-review-approve="'+esc(review.id)+'" data-approved="'+String(!!review.approved)+'">'+(review.approved?"برداشتن تأیید":"تأیید و انتشار")+'</button><button type="button" class="danger" data-delete-review="'+esc(review.id)+'">حذف نظر</button></div><p>'+esc(review.comment||"")+'</p></article>';
     }).join("") : '<p class="muted">هنوز نظری ثبت نشده است.</p>';
   }
 
