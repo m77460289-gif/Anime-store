@@ -31,9 +31,9 @@ function normalizeDigits(value){
  return String(value||"").replace(/[۰-۹]/g,d=>String("۰۱۲۳۴۵۶۷۸۹".indexOf(d))).replace(/[٠-٩]/g,d=>String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).trim();
 }
 function jalaliDateToGregorian(value){
- const normalized=normalizeDigits(value).replace(/[.\\-]/g,"/");
+ const normalized=normalizeDigits(value).replace(/[.\-]/g,"/");
  if(!normalized)return "";
- const match=normalized.match(/^(\\d{4})\\/(\\d{1,2})\\/(\\d{1,2})$/);
+ const match=normalized.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
  if(!match)throw new Error("تاریخ را به شکل سال/ماه/روز وارد کن؛ مثلاً ۱۴۰۵/۰۹/۰۷.");
  const jy=Number(match[1]),jm=Number(match[2]),jd=Number(match[3]);
  if(jy<1300||jy>1500||jm<1||jm>12||jd<1||jd>(jm<=6?31:jm<=11?30:30))throw new Error("تاریخ شمسی معتبر نیست.");
