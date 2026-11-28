@@ -98,6 +98,31 @@ document.addEventListener("input",e=>{
  input.value=persian;
  const caret=Math.min(persian.length,digitsBefore+(digitsBefore>=4?1:0)+(digitsBefore>=6?1:0));
  input.setSelectionRange(caret,caret);
+ validateExpiryInput(input,false);
+});
+function validateExpiryInput(input,showIncomplete){
+ const hint=$("#couponExpiryHint");
+ const value=String(input.value||"").trim();
+ let message="";
+ if(value){
+  if(!/^\\d{4}\\/\\d{2}\\/\\d{2}$/.test(normalizeDigits(value))){
+   if(showIncomplete)message="تاریخ را کامل و به شکل سال/ماه/روز وارد کن.";
+  }else{
+   try{jalaliDateToGregorian(value)}catch(error){message=error.message||"تاریخ شمسی معتبر نیست."}
+  }
+ }
+ input.setCustomValidity(message);
+ input.setAttribute("aria-invalid",message?"true":"false");
+ input.classList.toggle("is-invalid",Boolean(message));
+ if(hint){
+  hint.textContent=message||"مثلاً ۱۴۰۵/۰۹/۰۷؛ خالی بگذاری یعنی بدون انقضا";
+  hint.classList.toggle("is-error",Boolean(message));
+ }
+ return !message;
+}
+document.addEventListener("focusout",e=>{
+ const input=e.target.closest('#couponAdminForm input[name="expiresAt"]');
+ if(input)validateExpiryInput(input,true);
 });
 document.addEventListener("submit",async e=>{
  if(e.target.id!=="couponAdminForm")return;
