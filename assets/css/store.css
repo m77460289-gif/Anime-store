@@ -305,7 +305,37 @@
 
 .coupon-entry{margin:18px 0;padding:16px;border:1px solid var(--line,#333);border-radius:14px}.coupon-entry>div{display:flex;gap:8px;align-items:center}.coupon-entry input{flex:1;min-width:0}.coupon-entry strong{display:block;margin-top:8px}.admin-coupon-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.admin-coupon-form label{display:grid;gap:7px}.admin-coupon-form button{align-self:end}@media(max-width:560px){.coupon-entry>div{align-items:stretch;flex-direction:column}.admin-coupon-form{grid-template-columns:1fr}}
 
-/* Coupon form controls match the store's dark rounded input style */
+/* Coupon type selector: force the same appearance as the other admin fields */
+#couponAdminForm select[name="type"] {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0;
+  min-height: 46px !important;
+  padding: 11px 40px 11px 13px !important;
+  color: var(--text) !important;
+  background-color: #1c1c2a !important;
+  border: 1px solid #ffffff12 !important;
+  border-radius: 10px !important;
+  outline: 0;
+  font: inherit !important;
+  font-size: 12px !important;
+  line-height: 1.5;
+  color-scheme: dark;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23bdb4d2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: left 13px center !important;
+}
+#couponAdminForm select[name="type"]:focus {
+  border-color: #a78bfa99 !important;
+  box-shadow: 0 0 0 3px #a78bfa18;
+}
+#couponAdminForm select[name="type"] option {
+  color: var(--text);
+  background: #1c1c2a;
+}
 .admin-coupon-form input,
 .admin-coupon-form select {
   display: block;
