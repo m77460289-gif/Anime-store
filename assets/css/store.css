@@ -1229,3 +1229,24 @@ button:disabled{opacity:.58}
   #adminCouponList .admin-table th,#adminCouponList .admin-table td{padding:12px 10px!important}
   #adminCouponList .admin-row-actions button{min-height:40px!important;padding:8px 10px!important;font-size:12px!important}
 }
+
+
+/* Reviews moderation: readable high-contrast cards */
+#adminReviews{display:grid!important;gap:12px!important;color:#302442!important}
+#adminReviews .admin-message{display:block!important;padding:16px 18px!important;border:1px solid #e4dcef!important;border-radius:14px!important;background:#fff!important;color:#302442!important;box-shadow:0 5px 18px rgba(48,36,66,.055)!important}
+#adminReviews .admin-message-head{display:flex!important;align-items:center!important;gap:10px!important;flex-wrap:wrap!important;margin:0 0 12px!important}
+#adminReviews .admin-message-head b{color:#38294f!important;font:900 14px/1.8 Vazirmatn,Tahoma,sans-serif!important}
+#adminReviews .admin-message-head small{margin:0 auto 0 0!important;padding:4px 10px!important;border-radius:8px!important;background:#f1edf8!important;color:#584873!important;font:750 12px/1.8 Vazirmatn,Tahoma,sans-serif!important}
+#adminReviews .review-stars{color:#c58a16!important;font-size:17px!important;letter-spacing:2px!important;white-space:nowrap!important}
+#adminReviews .admin-message>p{margin:10px 0 2px!important;padding:12px 14px!important;border-radius:10px!important;background:#f8f6fb!important;color:#393246!important;font:600 14px/2 Vazirmatn,Tahoma,sans-serif!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important}
+#adminReviews .admin-message-head button{min-height:38px!important;padding:7px 12px!important;border:1px solid #cfc0e7!important;border-radius:9px!important;background:#f2edfa!important;color:#52377f!important;font:800 12px/1.6 Vazirmatn,Tahoma,sans-serif!important;white-space:nowrap!important;cursor:pointer!important}
+#adminReviews .admin-message-head button.danger{border-color:#efcaca!important;background:#fff0f0!important;color:#b52f38!important}
+#adminReviews .admin-message-head button:disabled{opacity:.55!important;cursor:wait!important}
+@media(max-width:620px){
+#adminReviews .admin-message{padding:13px!important}
+#adminReviews .admin-message-head{gap:8px!important}
+#adminReviews .admin-message-head b{font-size:13px!important}
+#adminReviews .admin-message-head small{order:2;width:100%;margin:0!important}
+#adminReviews .admin-message-head button{font-size:11px!important;min-height:40px!important}
+#adminReviews .admin-message>p{font-size:13px!important}
+}
