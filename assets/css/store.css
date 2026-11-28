@@ -375,3 +375,22 @@
 
 /* Favorites feature */
 .nav-fav-count{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;margin-right:3px;border-radius:20px;background:#ee8fca22;color:#f5a8d7;font-size:10px}.product-image{position:relative}.favorite-toggle{position:absolute;top:11px;left:11px;z-index:2;display:grid;place-items:center;width:36px;height:36px;border:1px solid #ffffff30;border-radius:50%;background:#151321d9;color:#fff;font-size:23px;line-height:1;cursor:pointer;transition:transform .2s,background .2s,color .2s}.favorite-toggle:hover{transform:scale(1.08)}.favorite-toggle.is-favorite{background:#e879b9;color:#fff;border-color:#e879b9}.favorites-section{background:linear-gradient(180deg,#17152255,transparent)}.favorites-section .empty-products{grid-column:1/-1;width:100%;padding:28px;text-align:center;border:1px dashed var(--line);border-radius:14px;color:var(--muted)}
+
+/* Product ratings and customer reviews */
+.product-reviews{margin-top:13px;border-top:1px solid var(--line);padding-top:10px;font-size:10px;color:var(--muted)}
+.product-reviews summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.product-reviews summary::-webkit-details-marker{display:none}
+.review-stars{color:#f4bd63;letter-spacing:1px;white-space:nowrap}
+.review-action{margin-right:auto;color:#d9b8f3}
+.review-content{padding-top:10px;display:grid;gap:10px}
+.customer-review{padding:10px;border-radius:10px;background:#ffffff06;border:1px solid var(--line)}
+.customer-review>div{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.customer-review b{font-size:10px;color:var(--text)}
+.customer-review p{margin:7px 0 0;min-height:0;font-size:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.review-form{display:grid;gap:9px;padding-top:9px;border-top:1px solid var(--line)}
+.review-form label{display:grid;gap:5px;color:var(--muted)}
+.review-form select,.review-form textarea{width:100%;min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#1c1c2a;color:var(--text);font:inherit;font-size:11px}
+.review-form textarea{resize:vertical;line-height:1.8}
+.review-form .button{justify-self:start;padding:9px 15px;font-size:10px}
+.review-login{border:0;background:none;color:#d9b8f3;font:inherit;text-decoration:underline;cursor:pointer}
+@media(max-width:700px){.review-action{width:100%;margin-right:0}.product-reviews summary{gap:4px}}
