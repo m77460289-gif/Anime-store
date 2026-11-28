@@ -1118,3 +1118,19 @@ button:disabled{opacity:.58}
     font-size:14px!important;
   }
 }
+
+
+/* FINAL FIX: coupon select was forced into dark native color scheme by an older ID rule */
+#couponAdminForm select[name="type"],
+.admin-coupon-card #couponAdminForm select[name="type"]{
+  color-scheme:light!important;
+  background-color:#fff!important;
+  color:#302442!important;
+  -webkit-text-fill-color:#302442!important;
+  border-color:#cfc3e5!important;
+}
+#couponAdminForm select[name="type"] option{
+  color-scheme:light!important;
+  background-color:#fff!important;
+  color:#302442!important;
+}
