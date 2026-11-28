@@ -1322,3 +1322,44 @@ button:disabled{opacity:.58}
  .admin-category-actions{width:100%}
  .admin-category-actions button{flex:1}
 }
+
+
+/* Product image picker — branded upload control */
+#productAdminForm label:has(input[type="file"][name="imageFile"]){
+  display:grid!important;gap:9px!important;color:#403653!important;
+  font:850 13px/1.8 Vazirmatn,Tahoma,sans-serif!important;
+}
+#productAdminForm input[type="file"][name="imageFile"]{
+  display:block!important;width:100%!important;min-width:0!important;min-height:58px!important;
+  box-sizing:border-box!important;padding:8px!important;
+  border:1.5px dashed #c8b8e5!important;border-radius:14px!important;
+  background:linear-gradient(135deg,#faf8ff,#f2edfb)!important;
+  color:#625477!important;-webkit-text-fill-color:#625477!important;
+  font:600 12px/1.7 Vazirmatn,Tahoma,sans-serif!important;
+  direction:rtl!important;cursor:pointer!important;
+  transition:border-color .2s,box-shadow .2s,background .2s!important;
+}
+#productAdminForm input[type="file"][name="imageFile"]:hover{
+  border-color:#987bd0!important;background:#f4efff!important;
+}
+#productAdminForm input[type="file"][name="imageFile"]:focus-visible{
+  outline:none!important;border-color:#8060bd!important;
+  box-shadow:0 0 0 4px rgba(128,96,189,.15)!important;
+}
+#productAdminForm input[type="file"][name="imageFile"]::file-selector-button{
+  min-height:38px;margin-inline-end:12px;padding:7px 16px;
+  border:0;border-radius:10px;background:linear-gradient(115deg,#8063dc,#b18be9);
+  color:#fff;font:800 12px/1.5 Vazirmatn,Tahoma,sans-serif;
+  cursor:pointer;box-shadow:0 4px 12px rgba(128,99,220,.2);
+  transition:filter .2s,transform .2s;
+}
+#productAdminForm input[type="file"][name="imageFile"]::file-selector-button:hover{filter:brightness(1.06)}
+#productAdminForm input[type="file"][name="imageFile"]::-webkit-file-upload-button{
+  min-height:38px;margin-inline-end:12px;padding:7px 16px;
+  border:0;border-radius:10px;background:linear-gradient(115deg,#8063dc,#b18be9);
+  color:#fff;font:800 12px/1.5 Vazirmatn,Tahoma,sans-serif;cursor:pointer;
+}
+@media(max-width:620px){
+ #productAdminForm input[type="file"][name="imageFile"]{min-height:56px;font-size:11px!important}
+ #productAdminForm input[type="file"][name="imageFile"]::file-selector-button{min-height:40px;padding:7px 12px}
+}
