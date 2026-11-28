@@ -41,9 +41,9 @@
       <nav class="admin-tabs" aria-label="بخش‌های پنل مدیریت">
         <button type="button" class="admin-tab active" data-admin-tab="overview">نمای کلی</button>
         <button type="button" class="admin-tab" data-admin-tab="products">مدیریت محصولات</button>
+        <button type="button" class="admin-tab" data-admin-tab="categories">مدیریت دسته‌بندی‌ها</button>
         <button type="button" class="admin-tab" data-admin-tab="orders">مدیریت سفارش‌ها</button>
         <button type="button" class="admin-tab" data-admin-tab="customers">مشتریان</button>
-        <button type="button" class="admin-tab" data-admin-tab="categories">مدیریت دسته‌بندی‌ها</button>
         <button type="button" class="admin-tab" data-admin-tab="messages">پیام‌های دریافتی</button>
         <button type="button" class="admin-tab" data-admin-tab="reports">گزارش فروش</button>
         <button type="button" class="admin-tab" data-admin-tab="coupons">کدهای تخفیف</button>
