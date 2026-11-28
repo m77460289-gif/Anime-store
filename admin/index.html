@@ -31,10 +31,11 @@ label{display:grid;gap:8px;font-size:12px;font-weight:700;color:#5e596f}input{wi
 (function(){
 "use strict";
 const KEY="niga-demo-current-user";
+const AUTH_KEY="niga-admin-route-auth-v1";
 const DEFAULT_ADMIN={name:"مدیر نیگا",email:"admin@niga.local",password:"Admin12345!",role:"ADMIN"};
 const $=id=>document.getElementById(id);
 function current(){try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch{return null}}
-function showApp(){const ok=current()?.role==="ADMIN";$("loginView").style.display=ok?"none":"block";$("adminApp").style.display=ok?"block":"none";$("logout").hidden=!ok;if(!ok)$("adminPassword").value=""}
+function showApp(){const ok=current()?.role==="ADMIN"&&localStorage.getItem(AUTH_KEY)==="1";$("loginView").style.display=ok?"none":"block";$("adminApp").style.display=ok?"block":"none";$("logout").hidden=!ok;if(!ok)$("adminPassword").value=""}
 $("loginForm").addEventListener("submit",function(event){
  event.preventDefault();
  const password=$("adminPassword").value;
@@ -42,9 +43,10 @@ $("loginForm").addEventListener("submit",function(event){
  const admin=users.find(user=>user&&user.role==="ADMIN"&&user.email==="admin@niga.local")||DEFAULT_ADMIN;
  if(password!==admin.password){$("feedback").textContent="رمز عبور مدیر درست نیست.";return}
  localStorage.setItem(KEY,JSON.stringify({name:admin.name||"مدیر نیگا",email:admin.email,password:admin.password,role:"ADMIN"}));
+ localStorage.setItem(AUTH_KEY,"1");
  $("feedback").textContent="";showApp();
 });
-$("logout").addEventListener("click",function(){localStorage.removeItem(KEY);showApp();});
+$("logout").addEventListener("click",function(){localStorage.removeItem(KEY);localStorage.removeItem(AUTH_KEY);showApp();});
 window.addEventListener("storage",function(event){if(event.key===KEY)showApp()});
 showApp();
 })();
