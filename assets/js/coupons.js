@@ -58,8 +58,7 @@ document.addEventListener("submit",e=>{
  list.push({code,type,value,minOrder:Math.max(0,Number(f.get("minOrder"))||0),usageLimit:Math.max(0,Number(f.get("usageLimit"))||0),usedCount:0,expiresAt:String(f.get("expiresAt")||""),active:true});
  write("niga-demo-coupons",list);e.target.reset();feedback.textContent="کد تخفیف ذخیره شد.";renderAdminCoupons();
 });
-const observer=new MutationObserver(()=>{addAdminTab();renderAdminCoupons()});
 const shell=$(".admin-shell");
-if(shell)observer.observe(shell,{childList:true,subtree:true});
+if(shell){shell.addEventListener("click",e=>{if(e.target.closest('[data-admin-tab="coupons"]'))renderAdminCoupons()});}
 addAdminTab();renderAdminCoupons();
 })();
