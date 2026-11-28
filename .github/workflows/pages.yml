@@ -36,6 +36,7 @@ jobs:
           cp index.html admin.html product.html dist/
           cp -R admin dist/admin
           cp -R assets dist/assets
+          printf '{"sha":"%s"}\\n' "$GITHUB_SHA" > dist/deploy-version.json
       - name: Configure Pages
         uses: actions/configure-pages@v6
       - name: Upload site artifact
