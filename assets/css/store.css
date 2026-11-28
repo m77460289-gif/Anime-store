@@ -1134,3 +1134,7 @@ button:disabled{opacity:.58}
   background-color:#fff!important;
   color:#302442!important;
 }
+
+/* Persian expiry date input */
+.admin-coupon-form input[name="expiresAt"]{direction:ltr;text-align:center;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.admin-coupon-form .coupon-expiry-hint{grid-column:1/-1;margin-top:-8px;color:#6b637d;font-size:11px;line-height:1.8}
