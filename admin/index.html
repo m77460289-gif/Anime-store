@@ -34,7 +34,10 @@ label{display:grid;gap:8px;font-size:12px;font-weight:700;color:#5e596f}input{wi
 "use strict";
 const $=id=>document.getElementById(id);
 const client=window.nigaSupabase;
-const ADMIN_CACHE="niga-demo-current-user";\nlet iframeEdited=false;\nlet updateCheckBusy=false;\nconst refreshButton=$("refreshAdmin");
+const ADMIN_CACHE="niga-demo-current-user";
+let iframeEdited=false;
+let updateCheckBusy=false;
+const refreshButton=$("refreshAdmin");
 function showApp(ok){
   $("loginView").style.display=ok?"none":"block";
   $("adminApp").style.display=ok?"block":"none";
