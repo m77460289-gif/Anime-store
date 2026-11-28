@@ -168,14 +168,12 @@
             <tr>
               <td><div class="admin-product-cell"><img src="${esc(product.imageUrl || "assets/images/gojo-poster.webp")}" alt=""><b>${esc(product.name)}</b></div></td>
               <td>${esc(product.category || "سایر")}</td>
-              <td>${Number(product.priceToman) > 0 ? money(product.priceToman) : "قیمت ثبت نشده"}</td>
+              <td>${Number(product.priceToman) > 0 ? (Number(product.compareAtPrice)>Number(product.priceToman)?`<span class="admin-price-old">${money(product.compareAtPrice)}</span><strong class="admin-price-sale">${money(product.priceToman)}</strong>`:money(product.priceToman)) : "قیمت ثبت نشده"}</td>
               <td>${product.stock == null ? "نامحدود" : number(product.stock)}</td>
               <td><span class="admin-status ${product.active === false ? "inactive" : "active"}">${product.active === false ? "غیرفعال" : "فعال"}</span></td>
               <td class="admin-row-actions">
                 <button type="button" data-edit-product="${esc(product.id)}">ویرایش</button>
-                ${product.active === false
-                  ? '<span class="muted">غیرفعال</span>'
-                  : `<button type="button" class="danger" data-delete-product="${esc(product.id)}">حذف</button>`}
+                <button type="button" data-toggle-product="${esc(product.id)}">${product.active === false ? "فعال‌سازی" : "غیرفعال‌سازی"}</button><button type="button" class="danger" data-delete-product="${esc(product.id)}">حذف کامل</button>
               </td>
             </tr>`).join("")}</tbody>
         </table>
