@@ -518,3 +518,124 @@ body{line-height:1.85}
 @media(max-width:1050px){.product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.product-image{height:205px}.product-info{padding:13px}.product-info h3{font-size:13px}.product-meta{align-items:flex-start;flex-direction:column}.add-button{width:100%}.hero{background:linear-gradient(150deg,#eee8fb,#faf9fd)}}
 @media(max-width:480px){.product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.product-image{height:165px}.product-info p{font-size:10px;min-height:54px}.product-info h3{font-size:12px}.price{font-size:12px}.add-button{font-size:10px;padding:9px 7px}.section{padding:65px 0}}
+
+
+/* NIGA ADMIN LIGHT DASHBOARD — clearer stats and navigation */
+.admin-stats .admin-stat{
+  position:relative;
+  overflow:hidden;
+  padding:18px 17px;
+  min-height:142px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:flex-start;
+  gap:3px;
+  background:linear-gradient(145deg,#fff 0%,#fbfaff 100%);
+  border:1px solid #e9e4f4;
+  border-radius:18px;
+  box-shadow:0 8px 24px rgba(67,49,112,.065);
+  color:#302b43;
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.admin-stats .admin-stat::after{
+  content:"";
+  position:absolute;
+  inset:auto -22px -36px auto;
+  width:105px;height:105px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#eee8ff,#fbeaf4);
+  opacity:.75;
+  pointer-events:none;
+}
+.admin-stats .admin-stat:hover{
+  transform:translateY(-3px);
+  border-color:#d8cdf2;
+  box-shadow:0 14px 30px rgba(67,49,112,.11);
+}
+.admin-stats .admin-stat-icon{
+  position:relative;z-index:1;
+  width:42px;height:42px;
+  margin:0 0 11px;
+  border-radius:13px;
+  background:linear-gradient(145deg,#f0eaff,#fcecf5);
+  color:#7959c8;
+  font-size:21px;
+}
+.admin-stats .admin-stat small{
+  position:relative;z-index:1;
+  color:#777188;
+  font-size:11px;
+  font-weight:600;
+}
+.admin-stats .admin-stat strong{
+  position:relative;z-index:1;
+  margin-top:3px;
+  color:#302b43;
+  font-size:clamp(17px,1.7vw,22px);
+  font-weight:800;
+  line-height:1.55;
+}
+.admin-workspace{gap:16px}
+.admin-tabs{
+  position:sticky;top:16px;
+  display:grid;gap:6px;
+  padding:10px;
+  background:linear-gradient(160deg,#fff,#fbfaff);
+  border:1px solid #e9e4f2;
+  border-radius:18px;
+  box-shadow:0 8px 25px rgba(67,49,112,.055);
+}
+.admin-tab{
+  position:relative;
+  display:flex;align-items:center;
+  min-height:44px;
+  padding:10px 13px;
+  text-align:right;
+  border:1px solid transparent;
+  border-radius:11px;
+  background:transparent;
+  color:#625d73;
+  font-family:inherit;
+  font-size:11px;
+  font-weight:600;
+  transition:background .2s ease,color .2s ease,border-color .2s ease,transform .2s ease;
+}
+.admin-tab:hover{
+  background:#f6f2ff;
+  border-color:#ebe4fb;
+  color:#7154bd;
+  transform:translateX(-2px);
+}
+.admin-tab.active{
+  background:linear-gradient(110deg,#eee8ff,#fbedf5);
+  border-color:#ded2f6;
+  color:#6849b4;
+  box-shadow:inset -3px 0 0 #8968d5;
+  font-weight:800;
+}
+.admin-tab:focus-visible{outline:3px solid #a78bfa55;outline-offset:2px}
+@media(max-width:1000px){
+  .admin-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .admin-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .admin-stats .admin-stat{min-height:128px;padding:13px;border-radius:15px}
+  .admin-stats .admin-stat-icon{width:36px;height:36px;font-size:18px;margin-bottom:7px}
+  .admin-stats .admin-stat small{font-size:10px}
+  .admin-stats .admin-stat strong{font-size:16px}
+  .admin-tabs{
+    position:static;
+    display:flex;gap:7px;
+    padding:9px;
+    border-radius:15px;
+    overflow-x:auto;
+    overscroll-behavior-inline:contain;
+    scrollbar-width:thin;
+  }
+  .admin-tab{flex:0 0 auto;min-height:40px;padding:9px 12px;white-space:nowrap}
+  .admin-tab:hover{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .admin-stats .admin-stat,.admin-tab{transition:none}
+}
