@@ -1377,3 +1377,19 @@ button:disabled{opacity:.58}
 #adminMessages .admin-message-head button:hover{background:#ffe5e5;border-color:#e7aaaa}
 #adminMessages .admin-message-head button:focus-visible{outline:3px solid #b52f3833;outline-offset:2px}
 @media(max-width:520px){#adminMessages .admin-message{padding:14px;border-radius:13px}#adminMessages .admin-message-head{grid-template-columns:minmax(0,1fr)}#adminMessages .admin-message-head b,#adminMessages .admin-message-head small,#adminMessages .admin-message-head button{grid-column:1;grid-row:auto}#adminMessages .admin-message-head small{text-align:right}#adminMessages .admin-message-head button{justify-self:start;margin-top:5px}#adminMessages .admin-message>p{font-size:12px!important;padding:10px}}
+
+
+/* Product discounts and separate product status/delete actions */
+.product-sale-badge{position:absolute;z-index:3;top:12px;left:12px;padding:5px 10px;border-radius:999px;background:#c83e5c;color:#fff;font-size:11px;font-weight:900;box-shadow:0 5px 14px #8d183633}
+.product-meta .price{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.55}
+.product-meta .price del{color:#91899f;font-size:11px;font-weight:600}
+.product-meta .price strong{color:#c43e62;font-size:14px;font-weight:900}
+.admin-price-old{display:block;color:#8d849c;text-decoration:line-through;font-size:10px}
+.admin-price-sale{display:block;color:#b9385b;font-weight:900;font-size:12px}
+.admin-row-actions{min-width:190px}
+.admin-row-actions button[data-toggle-product]{border:1px solid #d9cdef;background:#f2edfb;color:#5f478f;border-radius:9px;padding:7px 10px;font:800 11px/1.5 Vazirmatn,Tahoma,sans-serif;cursor:pointer;white-space:nowrap}
+.admin-row-actions button[data-delete-product]{white-space:nowrap}
+.detail-price{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.detail-price del{font-size:15px;color:#948ba3;font-weight:600}
+.detail-price strong{font-size:30px;color:#c43e62;font-weight:900}
+.detail-discount-badge{display:inline-flex;padding:4px 10px;border-radius:999px;background:#c83e5c;color:#fff;font-size:11px;font-weight:900}
