@@ -3,7 +3,8 @@ const read=(key,fallback)=>{try{const value=JSON.parse(localStorage.getItem(key)
 const money=n=>new Intl.NumberFormat("fa-IR").format(Number(n)||0)+" تومان";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const id=Number(new URLSearchParams(location.search).get("id"));
-const products=read("niga-demo-products",[]);
+const defaultProducts=[{id:1,name:"پوستر انیمه نیگا",description:"طرح پوستر انیمه از آرشیو تصویری نیگا.",category:"پوستر انیمه",priceToman:0,stock:null,imageUrl:"assets/images/gojo-poster.webp",active:true},{id:2,name:"قاب گوشی طرح انیمه",description:"قاب گوشی با طرح انیمه؛ قیمت ثبت‌شده در اطلاعات قبلی فروشگاه.",category:"اکسسوری موبایل",priceToman:550000,stock:null,imageUrl:"assets/images/deku-phone.webp",active:true}];
+const products=read("niga-demo-products",defaultProducts);
 const product=products.find(p=>Number(p.id)===id&&p.active!==false);
 const reviews=read("niga-demo-reviews",[]);
 const favorites=read("niga-demo-favorites",[]);
