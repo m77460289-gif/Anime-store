@@ -74,7 +74,7 @@ function showApp(ok){
   const frame=$("adminFrame");
   if(ok){
     if(frame.dataset.loaded!=="yes"){
-      frame.src="../index.html?admin=1&v=20261128-product-management-discounts-v1";
+      frame.src="../index.html?admin=1&v=20261128-ui-overlap-fix-v2";
       frame.dataset.loaded="yes";
       iframeEdited=false;
       refreshButton.hidden=true;
@@ -119,7 +119,7 @@ $("adminFrame").addEventListener("load",async function(){
 refreshButton.addEventListener("click",function(){
  if(iframeEdited&&!window.confirm("ممکن است تغییرات ذخیره‌نشده از بین بروند. مطمئنی می‌خواهی نسخه جدید بارگذاری شود؟"))return;
  const frame=$("adminFrame");
- frame.src="../index.html?admin=1&v=20261128-product-management-discounts-v1&refresh="+Date.now();
+ frame.src="../index.html?admin=1&v=20261128-ui-overlap-fix-v2&refresh="+Date.now();
  iframeEdited=false;
  refreshButton.hidden=true;
 });
