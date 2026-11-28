@@ -27,10 +27,11 @@ jobs:
         run: node --check assets/js/store.js
           node --check assets/js/admin.js
           node --check assets/js/coupons.js
+          node --check assets/js/product.js
       - name: Prepare static website
         run: |
           mkdir -p dist
-          cp index.html admin.html dist/
+          cp index.html admin.html product.html dist/
           cp -R assets dist/assets
       - name: Configure Pages
         uses: actions/configure-pages@v6
