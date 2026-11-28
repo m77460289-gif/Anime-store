@@ -1284,3 +1284,41 @@ button:disabled{opacity:.58}
 #productAdminForm select[name="category"] option{
  background:#fff;color:#302442;
 }
+
+
+/* Category management in admin panel */
+.admin-category-card{margin-bottom:16px!important}
+.admin-category-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}
+.admin-category-form label{display:grid;gap:7px;color:#493b5c;font-weight:800;font-size:13px}
+.admin-category-form input{
+ width:100%;min-height:44px;padding:10px 13px;border:1px solid #d8cfea;
+ border-radius:12px;background:#fff!important;color:#302442!important;
+ font:700 14px/1.6 Vazirmatn,Tahoma,sans-serif;
+}
+.admin-category-form input:focus{outline:none;border-color:#896bd0;box-shadow:0 0 0 3px #896bd01c}
+.admin-category-form .form-feedback{grid-column:1/-1;margin:0;color:#55466a;font-size:12px}
+.admin-category-list{display:grid;gap:10px}
+.admin-category-row{
+ display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+ padding:13px 15px;border:1px solid #e4dcef;border-radius:12px;background:#fff;
+}
+.admin-category-info{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.admin-category-info b{color:#302442;font-size:14px;font-weight:900}
+.admin-category-status{padding:3px 9px;border-radius:8px;font-size:11px;font-weight:850}
+.admin-category-status.active{background:#e8f7ef;color:#18794e}
+.admin-category-status.inactive{background:#f2edf5;color:#766b80}
+.admin-category-actions{display:flex;gap:7px;flex-wrap:wrap}
+.admin-category-actions button{
+ min-height:36px;padding:6px 11px;border:1px solid #cfc0e7;border-radius:9px;
+ background:#f2edfa;color:#52377f;font:800 11px/1.5 Vazirmatn,Tahoma,sans-serif;cursor:pointer;
+}
+.admin-category-actions button.danger{border-color:#efcaca;background:#fff0f0;color:#b52f38}
+.admin-category-actions button:disabled{opacity:.55;cursor:wait}
+#productAdminForm select[name="category"]{color-scheme:light}
+@media(max-width:620px){
+ .admin-category-form{grid-template-columns:1fr}
+ .admin-category-form .form-feedback{grid-column:auto}
+ .admin-category-row{align-items:flex-start}
+ .admin-category-actions{width:100%}
+ .admin-category-actions button{flex:1}
+}
