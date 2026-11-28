@@ -120,13 +120,16 @@ async function checkout(e){
   cart=[];
   localStorage.removeItem("niga-demo-applied-coupon");
   persist();
-  await loadOrdersFromSupabase();
-  await loadCatalogFromSupabase();
-  renderCart();renderMyOrders();renderAdminOrders();
   feedback.textContent="سفارش #"+created.order_number+" با موفقیت در سرور ثبت شد.";
   toast("سفارش با موفقیت ثبت شد.");
-  form.reset();
-  setTimeout(()=>{$("#checkoutModal").close();openAccount()},900);
+  // A committed order must not be reported as failed because a later UI refresh fails.
+  await Promise.allSettled([loadOrdersFromSupabase(),loadCatalogFromSupabase()]);
+  renderCart();renderMyOrders();renderAdminOrders();
+  setTimeout(()=>{
+   const modal=$("#checkoutModal");
+   if(modal?.open)modal.close();
+   openAccount();
+  },900);
  }catch(error){
   feedback.textContent=error.message||"ثبت سفارش انجام نشد.";
   console.error("Checkout:",error);
