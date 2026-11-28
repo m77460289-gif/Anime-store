@@ -172,11 +172,12 @@
     $("#adminUsers").innerHTML = customers.length ? `
       <div class="admin-table-wrap">
         <table class="admin-table">
-          <thead><tr><th>نام مشتری</th><th>ایمیل</th><th>تعداد سفارش‌ها</th></tr></thead>
+          <thead><tr><th>نام مشتری</th><th>شماره تماس</th><th>شناسه حساب</th><th>تعداد سفارش‌ها</th></tr></thead>
           <tbody>${customers.map(user => `
             <tr>
               <td>${esc(user.name || "بدون نام")}</td>
-              <td dir="ltr">${esc(user.email)}</td>
+              <td dir="ltr">${esc(user.phone || "ثبت نشده")}</td>
+              <td dir="ltr">${esc(user.id || "")}</td>
               <td>${number(orders.filter(order => order.userEmail === user.email).length)}</td>
             </tr>`).join("")}</tbody>
         </table>
