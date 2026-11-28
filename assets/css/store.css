@@ -1268,3 +1268,19 @@ button:disabled{opacity:.58}
  border-color:#efcaca!important;background:#fff0f0!important;color:#b52f38!important;
 }
 #adminReviews .review-actions button:disabled{opacity:.55!important;cursor:wait!important}
+
+
+/* Product category dropdown */
+#productAdminForm select[name="category"]{
+ display:block;width:100%;min-height:44px;padding:10px 14px;
+ border:1px solid #d8cfea;border-radius:12px;background:#fff!important;
+ color:#302442!important;-webkit-text-fill-color:#302442!important;
+ font:700 14px/1.6 Vazirmatn,Tahoma,sans-serif;
+ color-scheme:light;cursor:pointer;
+}
+#productAdminForm select[name="category"]:focus{
+ outline:none;border-color:#896bd0;box-shadow:0 0 0 3px #896bd01c;
+}
+#productAdminForm select[name="category"] option{
+ background:#fff;color:#302442;
+}
