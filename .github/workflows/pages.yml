@@ -28,7 +28,7 @@ jobs:
       - name: Prepare static website
         run: |
           mkdir -p dist
-          cp index.html dist/
+          cp index.html admin.html dist/
           cp -R assets dist/assets
       - name: Configure Pages
         uses: actions/configure-pages@v5
