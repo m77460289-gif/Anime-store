@@ -44,22 +44,26 @@ function showApp(ok){
     if(frame.dataset.loaded!=="yes"){
       frame.src="../index.html?admin=1&v=20261128-coupon-select-light-v2";
       frame.dataset.loaded="yes";
+      iframeEdited=false;
+      refreshButton.hidden=true;
     }
   }else{
     frame.src="about:blank";
     delete frame.dataset.loaded;
+    iframeEdited=false;
+    refreshButton.hidden=true;
   }
  }
 
 // بررسی نسخه منتشرشده بدون رفرش اجباری؛ کاربر خودش زمان بروزرسانی را انتخاب می‌کند.
 function assetSignature(html){
- return (html.match(/(?:assets\\/(?:css\\/(?:store|product)\\.css|js\\/(?:store|admin|coupons)\\.js))\\?v=[^"'\\s]+/g)||[]).join("|");
+ return (html.match(/(?:assets\/(?:css\/(?:store|product)\.css|js\/(?:store|admin|coupons)\.js))\?v=[^"'\s]+/g)||[]).join("|");
 }
 function loadedAssetSignature(doc){
  return Array.from(doc.querySelectorAll('link[rel="stylesheet"],script[src]'))
   .map(el=>el.getAttribute("href")||el.getAttribute("src")||"")
-  .filter(path=>/assets\\/(?:css\\/(?:store|product)\\.css|js\\/(?:store|admin|coupons)\\.js)/.test(path))
-  .map(path=>path.replace(/^\\.\\//,""))
+  .filter(path=>/assets\/(?:css\/(?:store|product)\.css|js\/(?:store|admin|coupons)\.js)/.test(path))
+  .map(path=>path.replace(/^\.\//,""))
   .join("|");
 }
 async function checkForNewVersion(){
@@ -94,7 +98,8 @@ refreshButton.addEventListener("click",function(){
  refreshButton.hidden=true;
 });
 setInterval(checkForNewVersion,30000);
-\nasync function verifyAdmin(user){
+
+async function verifyAdmin(user){
  if(!user)return false;
  const {data,error}=await client.from("profiles").select("id,full_name,role").eq("id",user.id).single();
  if(error)throw error;
