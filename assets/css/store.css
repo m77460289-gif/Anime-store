@@ -208,3 +208,94 @@
     overflow-x: hidden;
   }
 }
+
+
+/* Replace the wide product table with compact cards on phones */
+@media (max-width: 700px) {
+  .admin-view[data-admin-view="products"] .admin-table-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+    white-space: normal !important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table thead {
+    display: none !important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table tbody {
+    display: grid !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table tbody tr {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 8px 10px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 12px !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 12px !important;
+    background: #ffffff05 !important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table tbody td {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding: 4px 0 !important;
+    border: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    font-size: 10px !important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table tbody td::before {
+    display: block;
+    width: 100%;
+    color: var(--muted);
+    font-size: 9px;
+    content: "";
+  }
+  .admin-view[data-admin-view="products"] .admin-table tbody td:nth-child(1) {
+    grid-column: 1 / -1;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid var(--line) !important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table tbody td:nth-child(1)::before { content: "محصول"; }
+  .admin-view[data-admin-view="products"] .admin-table tbody td:nth-child(2)::before { content: "دسته‌بندی"; }
+  .admin-view[data-admin-view="products"] .admin-table tbody td:nth-child(3)::before { content: "قیمت"; }
+  .admin-view[data-admin-view="products"] .admin-table tbody td:nth-child(4)::before { content: "موجودی"; }
+  .admin-view[data-admin-view="products"] .admin-table tbody td:nth-child(5)::before { content: "وضعیت"; }
+  .admin-view[data-admin-view="products"] .admin-table tbody td:nth-child(6) {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    padding-top: 8px !important;
+    border-top: 1px solid var(--line) !important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table tbody td:nth-child(6)::before {
+    content: "عملیات";
+    flex: 0 0 100%;
+  }
+  .admin-view[data-admin-view="products"] .admin-product-cell {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .admin-view[data-admin-view="products"] .admin-product-cell b {
+    max-width: calc(100% - 48px) !important;
+    overflow-wrap: anywhere !important;
+  }
+  .admin-view[data-admin-view="products"] .admin-row-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    max-width: 100% !important;
+  }
+}
