@@ -1393,3 +1393,20 @@ button:disabled{opacity:.58}
 .detail-price del{font-size:15px;color:#948ba3;font-weight:600}
 .detail-price strong{font-size:30px;color:#c43e62;font-weight:900}
 .detail-discount-badge{display:inline-flex;padding:4px 10px;border-radius:999px;background:#c83e5c;color:#fff;font-size:11px;font-weight:900}
+
+/* Final layout fixes: admin actions and product badges */
+.site-header{position:sticky;top:0;z-index:1200;isolation:isolate}
+.topbar{position:sticky;top:0;z-index:2000;isolation:isolate}
+.top-actions{position:relative;z-index:2001;flex-shrink:0}
+.top-actions a,.top-actions button{position:relative;z-index:2002;visibility:visible;opacity:1;transform:none}
+.top-actions a[href="../index.html?store=1"]:hover,.top-actions #logout:hover{transform:translateY(-1px)}
+.top-actions #logout:not([hidden]){display:inline-flex}
+.product-image{isolation:isolate}
+.product-sale-badge{top:auto;left:auto;right:12px;bottom:12px;z-index:3;pointer-events:none;max-width:calc(100% - 24px);white-space:nowrap}
+.favorite-toggle{top:11px;left:11px;right:auto;z-index:4}
+.product-tag{top:12px;right:12px;left:auto;z-index:2;max-width:calc(100% - 65px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:600px){
+ .topbar{gap:8px;padding-inline:12px}
+ .top-actions{gap:7px}
+ .top-actions a[href="../index.html?store=1"],.top-actions #logout{min-height:38px;padding:8px 11px;font-size:10px;white-space:nowrap}
+}
