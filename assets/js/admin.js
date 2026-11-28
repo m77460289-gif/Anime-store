@@ -44,6 +44,7 @@
         <button type="button" class="admin-tab" data-admin-tab="orders">مدیریت سفارش‌ها</button>
         <button type="button" class="admin-tab" data-admin-tab="customers">مشتریان</button>
         <button type="button" class="admin-tab" data-admin-tab="messages">پیام‌های دریافتی</button>
+        <button type="button" class="admin-tab" data-admin-tab="reports">گزارش فروش</button>
       </nav>
       <section class="admin-view active" data-admin-view="overview">
         <div class="admin-card admin-overview-card">
@@ -73,6 +74,14 @@
         <div class="admin-card admin-list-card">
           <h3>پیام‌های فرم تماس</h3>
           <div id="adminMessages"></div>
+        </div>
+      </section>
+      <section class="admin-view" data-admin-view="reports">
+        <div class="admin-card admin-report-card">
+          <div class="admin-report-heading"><div><h3>گزارش عملکرد فروشگاه</h3><p class="muted">آمار بر اساس سفارش‌های ذخیره‌شده در همین مرورگر</p></div><label>بازه گزارش <select id="adminReportRange"><option value="7">۷ روز اخیر</option><option value="30" selected>۳۰ روز اخیر</option><option value="all">تمام مدت</option></select></label></div>
+          <div id="adminReportStats" class="admin-report-stats"></div>
+          <div class="admin-report-columns"><section><h4>فروش در بازه انتخابی</h4><div id="adminRevenueChart"></div></section><section><h4>محصولات پرفروش</h4><div id="adminTopProducts"></div></section></div>
+          <section class="admin-report-status"><h4>وضعیت سفارش‌ها</h4><div id="adminStatusBreakdown"></div></section>
         </div>
       </section>
     </div>
@@ -183,6 +192,55 @@
       </article>`).join("") : '<p class="muted">پیامی دریافت نشده است.</p>';
   }
 
+  function renderReports(products, orders, users) {
+    const range = $("#adminReportRange")?.value || "30";
+    const now = Date.now();
+    const cutoff = range === "all" ? 0 : now - Number(range) * 86400000;
+    const inRange = orders.filter(order => {
+      const time = Date.parse(order.createdAt || "");
+      return Number.isFinite(time) && time >= cutoff && time <= now;
+    });
+    const validOrders = inRange.filter(order => order.status !== "CANCELLED");
+    const revenue = validOrders.reduce((sum, order) => sum + (Number(order.totalToman) || 0), 0);
+    const completed = inRange.filter(order => order.status === "COMPLETED").length;
+    const quantities = new Map();
+    validOrders.forEach(order => (Array.isArray(order.items) ? order.items : []).forEach(item => {
+      const name = String(item.name || "محصول بدون نام");
+      quantities.set(name, (quantities.get(name) || 0) + Math.max(0, Number(item.quantity) || 0));
+    }));
+    const top = [...quantities.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+    $("#adminReportStats").innerHTML = [
+      ["فروش غیرلغوشده", money(revenue)],
+      ["سفارش‌های ثبت‌شده", number(inRange.length)],
+      ["سفارش‌های تکمیل‌شده", number(completed)],
+      ["میانگین مبلغ سفارش", money(validOrders.length ? Math.round(revenue / validOrders.length) : 0)]
+    ].map(([label, value]) => `<article class="admin-report-stat"><small>${label}</small><strong>${value}</strong></article>`).join("");
+
+    const days = range === "all" ? 14 : Math.min(Number(range), 30);
+    const buckets = [];
+    for (let offset = days - 1; offset >= 0; offset--) {
+      const date = new Date(now - offset * 86400000);
+      const key = date.toLocaleDateString("en-CA");
+      const total = validOrders.filter(order => {
+        const d = new Date(order.createdAt);
+        return Number.isFinite(d.getTime()) && d.toLocaleDateString("en-CA") === key;
+      }).reduce((sum, order) => sum + (Number(order.totalToman) || 0), 0);
+      buckets.push({label: new Intl.DateTimeFormat("fa-IR", {day:"numeric",month:"short"}).format(date), total});
+    }
+    const max = Math.max(1, ...buckets.map(bucket => bucket.total));
+    $("#adminRevenueChart").innerHTML = buckets.some(bucket => bucket.total) ? `
+      <div class="admin-bars">${buckets.map(bucket => `<div class="admin-bar-item" title="${esc(bucket.label)}: ${esc(money(bucket.total))}"><div class="admin-bar-track"><i style="height:${Math.max(3, bucket.total / max * 100)}%"></i></div><small>${esc(bucket.label)}</small></div>`).join("")}</div>
+    ` : '<p class="muted">در این بازه فروشی ثبت نشده است.</p>';
+    $("#adminTopProducts").innerHTML = top.length ? `
+      <ol class="admin-top-list">${top.map(([name, qty]) => `<li><span>${esc(name)}</span><b>${number(qty)} عدد</b></li>`).join("")}</ol>
+    ` : '<p class="muted">اطلاعات اقلام سفارش برای رتبه‌بندی کافی نیست.</p>';
+    const statuses = ["PENDING", "PROCESSING", "SHIPPED", "COMPLETED", "CANCELLED"];
+    $("#adminStatusBreakdown").innerHTML = statuses.map(status => {
+      const count = inRange.filter(order => order.status === status).length;
+      return `<div class="admin-status-row"><span>${statusText(status)}</span><b>${number(count)}</b></div>`;
+    }).join("");
+  }
+
   function renderRecentOrders(orders) {
     const target = $("#adminRecentOrders");
     const recent = orders.slice().sort((a, b) => Number(b.id) - Number(a.id)).slice(0, 5);
@@ -208,6 +266,7 @@
     renderUsers(users, orders);
     renderMessages(messages);
     renderRecentOrders(orders);
+    renderReports(products, orders, users);
   }
 
   shell.addEventListener("click", event => {
@@ -226,7 +285,7 @@
     }
   });
 
-  document.addEventListener("submit", event => {
+  shell.addEventListener("change", event => {\n    if (event.target.id === "adminReportRange") render();\n  });\n\n  document.addEventListener("submit", event => {
     if (event.target.id === "productAdminForm") setTimeout(render, 0);
   });
   document.addEventListener("change", event => {
