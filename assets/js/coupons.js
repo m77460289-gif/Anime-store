@@ -27,6 +27,29 @@ async function applyCoupon(){
  }catch(error){localStorage.removeItem("niga-demo-applied-coupon");feedback(error.message||"بررسی کد تخفیف انجام نشد.");}
  finally{if(btn)btn.disabled=false}
 }
+function normalizeDigits(value){
+ return String(value||"").replace(/[۰-۹]/g,d=>String("۰۱۲۳۴۵۶۷۸۹".indexOf(d))).replace(/[٠-٩]/g,d=>String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).trim();
+}
+function jalaliDateToGregorian(value){
+ const normalized=normalizeDigits(value).replace(/[.\\-]/g,"/");
+ if(!normalized)return "";
+ const match=normalized.match(/^(\\d{4})\\/(\\d{1,2})\\/(\\d{1,2})$/);
+ if(!match)throw new Error("تاریخ را به شکل سال/ماه/روز وارد کن؛ مثلاً ۱۴۰۵/۰۹/۰۷.");
+ const jy=Number(match[1]),jm=Number(match[2]),jd=Number(match[3]);
+ if(jy<1300||jy>1500||jm<1||jm>12||jd<1||jd>(jm<=6?31:jm<=11?30:30))throw new Error("تاریخ شمسی معتبر نیست.");
+ const calendar=new Intl.DateTimeFormat("en-US-u-ca-persian",{year:"numeric",month:"numeric",day:"numeric",timeZone:"UTC"});
+ let start=null;
+ for(let day=19;day<=22;day++){
+  const candidate=new Date(Date.UTC(jy+621,2,day));
+  const parts=Object.fromEntries(calendar.formatToParts(candidate).filter(p=>p.type!=="literal").map(p=>[p.type,Number(p.value)]));
+  if(parts.year===jy&&parts.month===1&&parts.day===1){start=candidate;break;}
+ }
+ if(!start)throw new Error("تبدیل تاریخ انجام نشد؛ تاریخ را بررسی کن.");
+ const offset=(jm<=6?(jm-1)*31:(6*31)+(jm-7)*30)+jd-1;
+ start.setUTCDate(start.getUTCDate()+offset);
+ const gy=start.getUTCFullYear(),gm=String(start.getUTCMonth()+1).padStart(2,"0"),gd=String(start.getUTCDate()).padStart(2,"0");
+ return gy+"-"+gm+"-"+gd;
+}
 function isAdmin(){return read("niga-demo-current-user",null)?.role==="ADMIN"}
 function couponRow(c){
  const type=c.discount_type==="percent"?"٪":" تومان";
@@ -67,12 +90,13 @@ document.addEventListener("submit",async e=>{
  e.preventDefault();
  const form=e.target,feedbackEl=$("#couponAdminFeedback");
  if(!isAdmin()||!client()){feedbackEl.textContent="برای ساخت کد تخفیف باید مدیر وارد شده باشد.";return}
- const f=new FormData(form),code=String(f.get("code")||"").trim().toUpperCase(),type=String(f.get("type")),value=Number(f.get("value")),minOrder=Math.max(0,Number(f.get("minOrder"))||0),limit=Math.max(0,Number(f.get("usageLimit"))||0),expiry=String(f.get("expiresAt")||"");
+ const f=new FormData(form),code=String(f.get("code")||"").trim().toUpperCase(),type=String(f.get("type")),value=Number(f.get("value")),minOrder=Math.max(0,Number(f.get("minOrder"))||0),limit=Math.max(0,Number(f.get("usageLimit"))||0),expiry=String(f.get("expiresAt")||"").trim();
  if(!/^[A-Z0-9_-]{3,40}$/.test(code)||!Number.isFinite(value)||value<=0||(type==="percent"&&value>100)){feedbackEl.textContent="کد یا مقدار تخفیف معتبر نیست؛ درصد حداکثر ۱۰۰ است.";return}
+ let expiryGregorian="";try{expiryGregorian=jalaliDateToGregorian(expiry)}catch(error){feedbackEl.textContent=error.message;return}
  const button=form.querySelector('button[type="submit"],button:not([type])');if(button)button.disabled=true;
  feedbackEl.textContent="در حال ذخیره کد در دیتابیس...";
  try{
-  const payload={code,discount_type:type==="percent"?"percent":"fixed",discount_value:value,minimum_order:minOrder,max_uses:limit||null,used_count:0,expires_at:expiry?new Date(expiry+"T23:59:59").toISOString():null,is_active:true};
+  const payload={code,discount_type:type==="percent"?"percent":"fixed",discount_value:value,minimum_order:minOrder,max_uses:limit||null,used_count:0,expires_at:expiryGregorian?new Date(expiryGregorian+"T23:59:59").toISOString():null,is_active:true};
   const {error}=await client().from("coupons").insert(payload);
   if(error)throw error;
   form.reset();feedbackEl.textContent="کد تخفیف در سرور ذخیره شد.";await renderAdminCoupons();
