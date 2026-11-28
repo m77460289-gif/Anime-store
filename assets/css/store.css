@@ -1138,3 +1138,16 @@ button:disabled{opacity:.58}
 /* Persian expiry date input */
 .admin-coupon-form input[name="expiresAt"]{direction:ltr;text-align:center;letter-spacing:.04em;font-variant-numeric:tabular-nums}
 .admin-coupon-form .coupon-expiry-hint{grid-column:1/-1;margin-top:-8px;color:#6b637d;font-size:11px;line-height:1.8}
+
+/* Jalali expiry: editable text field with automatic date separators */
+.admin-coupon-form input.jalali-date-input{
+ display:block;width:100%;min-width:0;min-height:44px;padding:10px 14px;
+ border:1px solid #d8cfea;border-radius:12px;background:#fff!important;
+ color:#302442!important;-webkit-text-fill-color:#302442!important;
+ font:700 15px/1.5 Vazirmatn,Tahoma,sans-serif;direction:ltr;text-align:center;
+ letter-spacing:.08em;font-variant-numeric:tabular-nums;appearance:none;
+}
+.admin-coupon-form input.jalali-date-input:focus{
+ outline:none;border-color:#896bd0;box-shadow:0 0 0 3px #896bd01c;
+}
+.admin-coupon-form input.jalali-date-input::placeholder{color:#9690a5!important;opacity:1}
