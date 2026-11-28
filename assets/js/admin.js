@@ -291,7 +291,14 @@
       render();
       return;
     }
-    const deleteReview = event.target.closest("[data-delete-review]");\n    if (deleteReview && isAdmin()) {\n      const reviews = read("niga-demo-reviews", []);\n      write("niga-demo-reviews", reviews.filter(review => String(review.id) !== deleteReview.dataset.deleteReview));\n      render();\n      return;\n    }\n    const deleteMessage = event.target.closest("[data-delete-message]");
+    const deleteReview = event.target.closest("[data-delete-review]");
+    if (deleteReview && isAdmin()) {
+      const reviews = read("niga-demo-reviews", []);
+      write("niga-demo-reviews", reviews.filter(review => String(review.id) !== deleteReview.dataset.deleteReview));
+      render();
+      return;
+    }
+    const deleteMessage = event.target.closest("[data-delete-message]");
     if (deleteMessage && isAdmin()) {
       const messages = read("niga-demo-messages", []);
       const remaining = messages.filter(message => String(message.id) !== deleteMessage.dataset.deleteMessage);
