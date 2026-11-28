@@ -1250,3 +1250,21 @@ button:disabled{opacity:.58}
 #adminReviews .admin-message-head button{font-size:11px!important;min-height:40px!important}
 #adminReviews .admin-message>p{font-size:13px!important}
 }
+
+
+/* Keep review moderation actions on their own row below the rating */
+#adminReviews .review-actions{
+ display:flex!important;align-items:center!important;flex-wrap:wrap!important;
+ gap:8px!important;margin:12px 0 8px!important;
+}
+#adminReviews .review-actions button{
+ min-height:38px!important;padding:7px 14px!important;
+ border:1px solid #cfc0e7!important;border-radius:9px!important;
+ background:#f2edfa!important;color:#52377f!important;
+ font:800 12px/1.6 Vazirmatn,Tahoma,sans-serif!important;
+ white-space:nowrap!important;cursor:pointer!important;
+}
+#adminReviews .review-actions button.danger{
+ border-color:#efcaca!important;background:#fff0f0!important;color:#b52f38!important;
+}
+#adminReviews .review-actions button:disabled{opacity:.55!important;cursor:wait!important}
