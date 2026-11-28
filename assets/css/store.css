@@ -755,3 +755,39 @@ body{line-height:1.85}
 .admin-recent-order .admin-status.processing{color:#6b21a8!important}
 .admin-recent-order .admin-status.completed{color:#166534!important}
 .admin-recent-order .admin-status.cancelled{color:#991b1b!important}
+
+
+/* EXTRA READABILITY — recent order status badges */
+.admin-recent-order .admin-status,
+.admin-recent-order .admin-status.shipped,
+.admin-recent-order .admin-status.pending,
+.admin-recent-order .admin-status.processing,
+.admin-recent-order .admin-status.completed,
+.admin-recent-order .admin-status.cancelled{
+  min-height:36px!important;
+  padding:7px 15px!important;
+  border-width:1.5px!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  line-height:1.6!important;
+  letter-spacing:0!important;
+  text-shadow:none!important;
+  box-shadow:0 2px 5px rgba(35,28,55,.09),inset 0 1px 0 rgba(255,255,255,.7)!important;
+}
+.admin-recent-order .admin-status::before{
+  width:8px!important;height:8px!important;flex-basis:8px!important;
+  box-shadow:0 0 0 2px currentColor!important;
+}
+.admin-recent-order .admin-status.shipped{color:#064b70!important;background:#d3efff!important;border-color:#38a9df!important}
+.admin-recent-order .admin-status.pending{color:#713b00!important;background:#fff0b8!important;border-color:#e8a923!important}
+.admin-recent-order .admin-status.processing{color:#54128b!important;background:#efddff!important;border-color:#a66be3!important}
+.admin-recent-order .admin-status.completed{color:#105b2b!important;background:#d5f8df!important;border-color:#43b96b!important}
+.admin-recent-order .admin-status.cancelled{color:#851b1b!important;background:#ffe0e0!important;border-color:#e87979!important}
+@media(max-width:520px){
+ .admin-recent-order .admin-status,
+ .admin-recent-order .admin-status.shipped,
+ .admin-recent-order .admin-status.pending,
+ .admin-recent-order .admin-status.processing,
+ .admin-recent-order .admin-status.completed,
+ .admin-recent-order .admin-status.cancelled{font-size:11px!important;min-height:33px!important;padding:6px 11px!important}
+}
