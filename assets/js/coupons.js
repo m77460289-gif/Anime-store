@@ -89,13 +89,14 @@ document.addEventListener("click",async e=>{
 });
 document.addEventListener("input",e=>{
  const input=e.target.closest('#couponAdminForm input[name="expiresAt"]');if(!input)return;
- const before=String(input.value||"").slice(0,input.selectionStart??input.value.length);
- const digitCount=normalizeDigits(before).replace(/\\D/g,"").length;
- const digits=normalizeDigits(input.value).replace(/\\D/g,"").slice(0,8);
+ const raw=String(input.value||"");
+ const caretPos=input.selectionStart??raw.length;
+ const digitsBefore=normalizeDigits(raw.slice(0,caretPos)).replace(/\D/g,"").length;
+ const digits=normalizeDigits(raw).replace(/\D/g,"").slice(0,8);
  const formatted=digits.split("").map((d,i)=>d+(i===3||i===5?"/":"")).join("");
  const persian=formatted.replace(/[0-9]/g,d=>"۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
  input.value=persian;
- const caret=Math.min(persian.length,digitCount+(digitCount>=4?1:0)+(digitCount>=6?1:0));
+ const caret=Math.min(persian.length,digitsBefore+(digitsBefore>=4?1:0)+(digitsBefore>=6?1:0));
  input.setSelectionRange(caret,caret);
 });
 document.addEventListener("submit",async e=>{
