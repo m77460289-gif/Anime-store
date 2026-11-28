@@ -25,7 +25,7 @@ label{display:grid;gap:8px;font-size:12px;font-weight:700;color:#5e596f}input{wi
 </head>
 <body>
 <header class="topbar"><a class="brand" href="../index.html?store=1">NIGA<small>مدیریت فروشگاه</small></a><div class="top-actions"><a href="../index.html?store=1">مشاهده فروشگاه</a><button id="logout" type="button" hidden>خروج از پنل</button></div></header>
-<main id="loginView"><section class="login-card"><div class="mark">N</div><p class="kicker">ناحیه امن مدیریت</p><h1>ورود به پنل نیگا</h1><p class="hint">با ایمیل و رمز عبور حساب تأییدشدهٔ مدیر وارد شو.</p><form id="loginForm"><label for="adminEmail">ایمیل مدیر<input id="adminEmail" name="email" type="email" autocomplete="username" required autofocus dir="ltr" value="mohammadmatinhdadi@gmail.com"></label><label for="adminPassword" style="margin-top:14px">رمز عبور<input id="adminPassword" name="password" type="password" autocomplete="current-password" required></label><button class="submit" id="loginSubmit" type="submit">ورود به پنل مدیریت</button><button class="reset-link" id="forgotPassword" type="button">رمز عبورم را فراموش کرده‌ام</button><p class="feedback" id="feedback" role="alert"></p></form><form id="recoveryForm" hidden><label for="newPassword">رمز عبور جدید<input id="newPassword" type="password" autocomplete="new-password" minlength="8" required></label><label for="confirmPassword" style="margin-top:14px">تکرار رمز عبور جدید<input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required></label><button class="submit" id="savePassword" type="submit">ثبت رمز عبور جدید</button><p class="feedback" id="recoveryFeedback" role="alert"></p></form><p class="security-note>دسترسی مدیر از جدول profiles در پایگاه داده بررسی می‌شود؛ نقش ذخیره‌شده در مرورگر مبنای مجوز نیست.</p></section></main>
+<main id="loginView"><section class="login-card"><div class="mark">N</div><p class="kicker">ناحیه امن مدیریت</p><h1>ورود به پنل نیگا</h1><p class="hint">با ایمیل و رمز عبور حساب تأییدشدهٔ مدیر وارد شو.</p><form id="loginForm"><label for="adminEmail">ایمیل مدیر<input id="adminEmail" name="email" type="email" autocomplete="username" required autofocus dir="ltr" value="mohammadmatinhdadi@gmail.com"></label><label for="adminPassword" style="margin-top:14px">رمز عبور<input id="adminPassword" name="password" type="password" autocomplete="current-password" required></label><button class="submit" id="loginSubmit" type="submit">ورود به پنل مدیریت</button><button class="reset-link" id="forgotPassword" type="button">رمز عبورم را فراموش کرده‌ام</button><p class="feedback" id="feedback" role="alert"></p></form><form id="recoveryForm" hidden><label for="newPassword">رمز عبور جدید<input id="newPassword" type="password" autocomplete="new-password" minlength="8" required></label><label for="confirmPassword" style="margin-top:14px">تکرار رمز عبور جدید<input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required></label><button class="submit" id="savePassword" type="submit">ثبت رمز عبور جدید</button><p class="feedback" id="recoveryFeedback" role="alert"></p></form><p class="security-note">دسترسی مدیر از جدول profiles در پایگاه داده بررسی می‌شود؛ نقش ذخیره‌شده در مرورگر مبنای مجوز نیست.</p></section></main>
 <section id="adminApp"><iframe class="admin-frame" title="پنل مدیریت فروشگاه نیگا" src="about:blank" id="adminFrame"></iframe></section>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"></script>
 <script src="../assets/js/supabase-client.js?v=20261128-supabase-auth-v1"></script>
@@ -58,10 +58,12 @@ async function verifyAdmin(user){
  localStorage.setItem(ADMIN_CACHE,JSON.stringify({id:user.id,name:data.full_name||user.email.split("@")[0],email:user.email,role:"ADMIN"}));
  return true;
 }
-function showRecovery(){ $("loginForm").hidden=true; $("recoveryForm").hidden=false; $("feedback").textContent=""; $("recoveryFeedback").textContent="لینک بازیابی تأیید شد؛ رمز جدیدت را وارد کن."; }\nasync function checkSession(){
+function showRecovery(){ $("loginForm").hidden=true; $("recoveryForm").hidden=false; $("feedback").textContent=""; $("recoveryFeedback").textContent="لینک بازیابی تأیید شد؛ رمز جدیدت را وارد کن."; }
+async function checkSession(){
  if(!client){$("feedback").textContent=window.nigaSupabaseError||"اتصال به سرور برقرار نشد.";return}
  try{
   const {data,error}=await client.auth.getSession();if(error)throw error;
+  if(data.session?.user && location.hash.includes("type=recovery")){showApp(false);showRecovery();return;}
   const ok=await verifyAdmin(data.session?.user);showApp(ok);
   if(!ok&&data.session?.user)$("feedback").textContent="این حساب دسترسی مدیر ندارد.";
  }catch(error){showApp(false);$("feedback").textContent=error.message||"بررسی دسترسی مدیر ناموفق بود."}
@@ -78,10 +80,23 @@ $("loginForm").addEventListener("submit",async function(event){
  }catch(error){$("feedback").textContent=error.message==="Invalid login credentials"?"ایمیل یا رمز عبور درست نیست.":error.message||"ورود انجام نشد."}
  finally{button.disabled=false}
 });
-$("forgotPassword").addEventListener("click",async function(){\n if(!client){$("feedback").textContent=window.nigaSupabaseError||"اتصال به سرور برقرار نشد.";return;}\n const email=$("adminEmail").value.trim().toLowerCase();if(!email){$("feedback").textContent="ابتدا ایمیل مدیر را وارد کن.";return;}\n const button=$("forgotPassword");button.disabled=true;$("feedback").textContent="در حال ارسال لینک بازیابی...";\n try{const redirectTo=new URL("./",location.href).href;const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo});if(error)throw error;$("feedback").textContent="اگر این ایمیل در سامانه ثبت شده باشد، لینک بازیابی برایش ارسال می‌شود. پوشه هرزنامه را هم بررسی کن.";}catch(error){$("feedback").textContent=error.message||"ارسال لینک بازیابی انجام نشد.";}finally{button.disabled=false;}\n});\n$("recoveryForm").addEventListener("submit",async function(event){\n event.preventDefault();const password=$("newPassword").value,confirm=$("confirmPassword").value;\n if(password.length<8){$("recoveryFeedback").textContent="رمز باید حداقل ۸ کاراکتر باشد.";return;}if(password!==confirm){$("recoveryFeedback").textContent="تکرار رمز با رمز جدید یکسان نیست.";return;}\n const button=$("savePassword");button.disabled=true;$("recoveryFeedback").textContent="در حال ثبت رمز جدید...";\n try{const {data,error}=await client.auth.updateUser({password});if(error)throw error;$("recoveryFeedback").textContent="رمز عبور با موفقیت تغییر کرد. در حال ورود به پنل...";history.replaceState(null,"",location.pathname);const ok=await verifyAdmin(data.user);if(ok){$("recoveryForm").hidden=true;showApp(true);}else throw new Error("رمز تغییر کرد، اما این حساب نقش مدیر ندارد.");}\n catch(error){$("recoveryFeedback").textContent=error.message||"تغییر رمز انجام نشد.";}finally{button.disabled=false;}\n});\n$("logout").addEventListener("click",async function(){
+$("forgotPassword").addEventListener("click",async function(){
+ if(!client){$("feedback").textContent=window.nigaSupabaseError||"اتصال به سرور برقرار نشد.";return;}
+ const email=$("adminEmail").value.trim().toLowerCase();if(!email){$("feedback").textContent="ابتدا ایمیل مدیر را وارد کن.";return;}
+ const button=$("forgotPassword");button.disabled=true;$("feedback").textContent="در حال ارسال لینک بازیابی...";
+ try{const redirectTo=new URL("./",location.href).href;const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo});if(error)throw error;$("feedback").textContent="اگر این ایمیل در سامانه ثبت شده باشد، لینک بازیابی برایش ارسال می‌شود. پوشه هرزنامه را هم بررسی کن.";}catch(error){$("feedback").textContent=error.message||"ارسال لینک بازیابی انجام نشد.";}finally{button.disabled=false;}
+});
+$("recoveryForm").addEventListener("submit",async function(event){
+ event.preventDefault();const password=$("newPassword").value,confirm=$("confirmPassword").value;
+ if(password.length<8){$("recoveryFeedback").textContent="رمز باید حداقل ۸ کاراکتر باشد.";return;}if(password!==confirm){$("recoveryFeedback").textContent="تکرار رمز با رمز جدید یکسان نیست.";return;}
+ const button=$("savePassword");button.disabled=true;$("recoveryFeedback").textContent="در حال ثبت رمز جدید...";
+ try{const {data,error}=await client.auth.updateUser({password});if(error)throw error;$("recoveryFeedback").textContent="رمز عبور با موفقیت تغییر کرد. در حال ورود به پنل...";history.replaceState(null,"",location.pathname);const ok=await verifyAdmin(data.user);if(ok){$("recoveryForm").hidden=true;showApp(true);}else throw new Error("رمز تغییر کرد، اما این حساب نقش مدیر ندارد.");}
+ catch(error){$("recoveryFeedback").textContent=error.message||"تغییر رمز انجام نشد.";}finally{button.disabled=false;}
+});
+$("logout").addEventListener("click",async function(){
  if(client)await client.auth.signOut();localStorage.removeItem(ADMIN_CACHE);showApp(false);$("adminPassword").value="";
 });
-if(client)client.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT"){localStorage.removeItem(ADMIN_CACHE);showApp(false)}});
+if(client)client.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){showApp(false);showRecovery();}if(event==="SIGNED_OUT"){localStorage.removeItem(ADMIN_CACHE);showApp(false)}});
 checkSession();
 })();
 </script>
