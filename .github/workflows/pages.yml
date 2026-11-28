@@ -24,7 +24,9 @@ jobs:
         with:
           node-version: "22"
       - name: Check JavaScript syntax
-        run: node --check assets/js/store.js
+        run: |
+          node --check assets/js/supabase-client.js
+          node --check assets/js/store.js
           node --check assets/js/admin.js
           node --check assets/js/coupons.js
           node --check assets/js/product.js
