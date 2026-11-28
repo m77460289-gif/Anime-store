@@ -203,7 +203,7 @@
     const rows = reviews.slice().sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));
     target.innerHTML = rows.length ? rows.map(review => {
       const product = products.find(item => String(item.id) === String(review.productId));
-      return '<article class="admin-message"><div class="admin-message-head"><b>'+esc(review.name||"مشتری نیگا")+'</b><small>'+esc(product?.name||"محصول حذف‌شده")+'</small><span class="review-stars">'+("★".repeat(Math.max(0,Math.min(5,Number(review.rating)||0))))+'</span><button type="button" class="danger" data-delete-review="'+esc(review.id)+'">حذف نظر</button></div><p>'+esc(review.comment||"")+'</p></article>';
+      return '<article class="admin-message"><div class="admin-message-head"><b>'+esc(review.name||"مشتری نیگا")+'</b><small>'+esc(product?.name||"محصول حذف‌شده")+'</small><span class="review-stars">'+("★".repeat(Math.max(0,Math.min(5,Number(review.rating)||0))))+'</span><button type="button" data-review-approve="'+esc(review.id)+'" data-approved="'+String(!!review.approved)+'">'+(review.approved?"برداشتن تأیید":"تأیید و انتشار")+'</button><button type="button" class="danger" data-delete-review="'+esc(review.id)+'">حذف نظر</button></div><p>'+esc(review.comment||"")+'</p></article>';
     }).join("") : '<p class="muted">هنوز نظری ثبت نشده است.</p>';
   }
 
@@ -266,20 +266,41 @@
       </div>`).join("") : '<p class="muted">هنوز سفارشی ثبت نشده است.</p>';
   }
 
-  function render() {
+  let renderSequence = 0;
+  async function render() {
     const permitted = isAdmin();
     if (navLink) navLink.hidden = !permitted;
     if (!permitted || section.hidden) return;
-
+    const sequence = ++renderSequence;
     const products = read("niga-demo-products", []);
     const orders = read("niga-demo-orders", []);
-    const users = read("niga-demo-users", []);
-    const messages = read("niga-demo-messages", []);
-
+    let users = [], messages = [], reviews = [];
+    const client = window.nigaSupabase;
+    if (client) {
+      try {
+        const [profileResult,messageResult,reviewResult] = await Promise.all([
+          client.from("profiles").select("id,full_name,phone,role,created_at").order("created_at",{ascending:false}),
+          client.from("support_messages").select("id,user_id,customer_name,customer_email,subject,message,status,created_at").order("created_at",{ascending:false}),
+          client.from("reviews").select("id,product_id,user_id,rating,comment,is_approved,created_at").order("created_at",{ascending:false})
+        ]);
+        if (profileResult.error) throw profileResult.error;
+        if (messageResult.error) throw messageResult.error;
+        if (reviewResult.error) throw reviewResult.error;
+        users = (profileResult.data||[]).map(u=>({id:u.id,name:u.full_name||"مشتری",email:u.id,phone:u.phone,role:u.role==="admin"?"ADMIN":"CUSTOMER"}));
+        messages = (messageResult.data||[]).map(m=>({id:m.id,name:m.customer_name,email:m.customer_email,subject:m.subject,message:m.message,createdAt:m.created_at,status:m.status}));
+        reviews = (reviewResult.data||[]).map(r=>({id:r.id,productId:r.product_id,userEmail:r.user_id,name:"مشتری · "+String(r.user_id).slice(0,8),rating:r.rating,comment:r.comment,approved:r.is_approved,createdAt:new Date(r.created_at).getTime()}));
+      } catch(error) {
+        console.error("Admin data load:",error);
+        const box=$("#adminOverviewText");if(box)box.textContent="بارگذاری برخی اطلاعات آنلاین ناموفق بود: "+(error.message||"خطای ارتباط");
+        return;
+      }
+    }
+    if (sequence !== renderSequence) return;
     renderStats(products, orders, users, messages);
     renderProducts(products);
     renderUsers(users, orders);
     renderMessages(messages);
+    renderReviews(reviews, products);
     renderRecentOrders(orders);
     renderReports(products, orders, users);
   }
@@ -293,17 +314,20 @@
     }
     const deleteReview = event.target.closest("[data-delete-review]");
     if (deleteReview && isAdmin()) {
-      const reviews = read("niga-demo-reviews", []);
-      write("niga-demo-reviews", reviews.filter(review => String(review.id) !== deleteReview.dataset.deleteReview));
-      render();
+      deleteReview.disabled = true;
+      window.nigaSupabase.from("reviews").delete().eq("id",deleteReview.dataset.deleteReview).then(({error})=>{if(error)alert("حذف دیدگاه انجام نشد: "+error.message);render()});
+      return;
+    }
+    const approveReview = event.target.closest("[data-review-approve]");
+    if (approveReview && isAdmin()) {
+      approveReview.disabled = true;
+      window.nigaSupabase.from("reviews").update({is_approved:approveReview.dataset.approved!=="true"}).eq("id",approveReview.dataset.reviewApprove).then(({error})=>{if(error)alert("تغییر وضعیت دیدگاه انجام نشد: "+error.message);render()});
       return;
     }
     const deleteMessage = event.target.closest("[data-delete-message]");
     if (deleteMessage && isAdmin()) {
-      const messages = read("niga-demo-messages", []);
-      const remaining = messages.filter(message => String(message.id) !== deleteMessage.dataset.deleteMessage);
-      write("niga-demo-messages", remaining);
-      render();
+      deleteMessage.disabled = true;
+      window.nigaSupabase.from("support_messages").delete().eq("id",deleteMessage.dataset.deleteMessage).then(({error})=>{if(error)alert("حذف پیام انجام نشد: "+error.message);render()});
     }
   });
 
