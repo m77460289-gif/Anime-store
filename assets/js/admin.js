@@ -285,7 +285,11 @@
     }
   });
 
-  shell.addEventListener("change", event => {\n    if (event.target.id === "adminReportRange") render();\n  });\n\n  document.addEventListener("submit", event => {
+  shell.addEventListener("change", event => {
+    if (event.target.id === "adminReportRange") render();
+  });
+
+  document.addEventListener("submit", event => {
     if (event.target.id === "productAdminForm") setTimeout(render, 0);
   });
   document.addEventListener("change", event => {
