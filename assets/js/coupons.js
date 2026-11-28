@@ -7,7 +7,7 @@ const money=n=>new Intl.NumberFormat("fa-IR").format(Number(n)||0)+" تومان"
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function getSubtotal(){
  const cart=read("niga-demo-cart",[]),products=read("niga-demo-products",[]);
- return cart.reduce((sum,item)=>{const p=products.find(x=>Number(x.id)===Number(item.id)&&x.active!==false);return sum+(p?Number(p.priceToman||0)*Math.max(1,Number(item.qty)||1):0)},0);
+ return cart.reduce((sum,item)=>{const p=products.find(x=>String(x.id)===String(item.id)&&x.active!==false);return sum+(p?Number(p.priceToman||0)*Math.max(1,Number(item.qty)||1):0)},0);
 }
 function applyCoupon(){
  const input=$("#couponCode"),feedback=$("#couponFeedback"),summary=$("#couponSummary");
