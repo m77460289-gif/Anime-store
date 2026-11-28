@@ -791,3 +791,102 @@ body{line-height:1.85}
  .admin-recent-order .admin-status.completed,
  .admin-recent-order .admin-status.cancelled{font-size:11px!important;min-height:33px!important;padding:6px 11px!important}
 }
+
+
+/* NIGA ADMIN PRODUCT LIST — high contrast, readable table */
+.admin-view[data-admin-view="products"] .admin-list-card{
+  background:#fff!important;
+  color:#29243a!important;
+  border:1px solid #ded8eb!important;
+}
+.admin-view[data-admin-view="products"] .admin-list-card h3{
+  color:#29243a!important;
+  font-size:17px!important;
+  font-weight:900!important;
+}
+.admin-view[data-admin-view="products"] .admin-table{
+  color:#29243a!important;
+  font-size:12px!important;
+}
+.admin-view[data-admin-view="products"] .admin-table th{
+  color:#40345e!important;
+  background:#f0ebfa!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  border-bottom:2px solid #d8cdec!important;
+}
+.admin-view[data-admin-view="products"] .admin-table td{
+  color:#302b40!important;
+  font-size:12px!important;
+  font-weight:600!important;
+  border-bottom:1px solid #e8e2f0!important;
+}
+.admin-view[data-admin-view="products"] .admin-product-cell b{
+  color:#29243a!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  line-height:1.8!important;
+}
+.admin-view[data-admin-view="products"] .admin-product-cell img{
+  border:1px solid #e4deed!important;
+  background:#f5f2fa!important;
+}
+.admin-view[data-admin-view="products"] .admin-table .admin-status{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:30px!important;
+  padding:5px 12px!important;
+  border:1px solid #86cda9!important;
+  border-radius:999px!important;
+  background:#dcfce9!important;
+  color:#145c35!important;
+  -webkit-text-fill-color:#145c35!important;
+  font-size:11px!important;
+  font-weight:900!important;
+}
+.admin-view[data-admin-view="products"] .admin-table .admin-status.inactive{
+  background:#ffe5e5!important;
+  border-color:#efa0a0!important;
+  color:#8a2020!important;
+  -webkit-text-fill-color:#8a2020!important;
+}
+.admin-view[data-admin-view="products"] .admin-table td button{
+  min-height:34px!important;
+  padding:7px 13px!important;
+  border:1px solid #cfc2eb!important;
+  border-radius:9px!important;
+  background:#f0eaff!important;
+  color:#52368e!important;
+  -webkit-text-fill-color:#52368e!important;
+  font:800 11px Tahoma,Vazirmatn,sans-serif!important;
+  cursor:pointer;
+}
+.admin-view[data-admin-view="products"] .admin-table td button.danger{
+  background:#fff0f0!important;
+  border-color:#efb0b0!important;
+  color:#a12626!important;
+  -webkit-text-fill-color:#a12626!important;
+}
+.admin-view[data-admin-view="products"] .admin-table tbody tr:hover td{
+  background:#faf8ff!important;
+}
+@media(max-width:700px){
+  .admin-view[data-admin-view="products"] .admin-table tbody td{
+    color:#302b40!important;
+    font-size:12px!important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table tbody td::before{
+    color:#59477e!important;
+    font-weight:900!important;
+    font-size:11px!important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table tbody td:nth-child(1) .admin-product-cell b{
+    color:#29243a!important;
+    font-size:12px!important;
+  }
+  .admin-view[data-admin-view="products"] .admin-table tbody td:nth-child(6) button{
+    min-height:36px!important;
+    font-size:12px!important;
+  }
+}
