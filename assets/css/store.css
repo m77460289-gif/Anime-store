@@ -1162,3 +1162,70 @@ button:disabled{opacity:.58}
  color:#c62828!important;
  font-weight:800;
 }
+
+
+/* Coupon registry readability: high-contrast table and comfortable controls */
+#adminCouponList{width:100%;min-width:0;color:#302442}
+#adminCouponList .admin-table-wrap{
+  overflow-x:auto!important;
+  border:1px solid #e4dcef!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:0 6px 22px rgba(48,36,66,.06)!important;
+  scrollbar-color:#b9a8d8 #f3eff8;
+}
+#adminCouponList .admin-table{
+  min-width:760px!important;
+  width:100%!important;
+  border-collapse:separate!important;
+  border-spacing:0!important;
+  white-space:nowrap!important;
+  font:600 13px/1.9 Vazirmatn,Tahoma,sans-serif!important;
+  color:#302442!important;
+  background:#fff!important;
+}
+#adminCouponList .admin-table thead th{
+  padding:15px 13px!important;
+  background:#f1ecf8!important;
+  color:#493665!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  border-bottom:1px solid #ded4ec!important;
+}
+#adminCouponList .admin-table tbody td{
+  padding:15px 13px!important;
+  background:#fff!important;
+  color:#40364f!important;
+  border-bottom:1px solid #eee9f4!important;
+  font-size:13px!important;
+  font-weight:650!important;
+  line-height:2!important;
+}
+#adminCouponList .admin-table tbody tr:last-child td{border-bottom:0!important}
+#adminCouponList .admin-table tbody tr:hover td{background:#faf8fd!important}
+#adminCouponList .admin-table td:first-child b{
+  display:inline-block;padding:3px 10px;border-radius:8px;
+  background:#f0eafd;color:#593d91!important;
+  font-size:14px!important;font-weight:900!important;letter-spacing:.04em;
+}
+#adminCouponList .admin-table td:nth-child(6){font-weight:900!important;color:#18794e!important}
+#adminCouponList .admin-table td:nth-child(6):has(+td) {white-space:nowrap}
+#adminCouponList .admin-row-actions{
+  display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:8px!important;
+}
+#adminCouponList .admin-row-actions button{
+  min-height:38px!important;padding:7px 12px!important;
+  border:1px solid #cfc0e7!important;border-radius:9px!important;
+  background:#f3effb!important;color:#543b83!important;
+  font:800 12px/1.5 Vazirmatn,Tahoma,sans-serif!important;
+  white-space:nowrap!important;cursor:pointer!important;
+}
+#adminCouponList .admin-row-actions button.danger{
+  border-color:#f0caca!important;background:#fff1f1!important;color:#b52f38!important;
+}
+#adminCouponList .admin-row-actions button:disabled{opacity:.55!important;cursor:wait!important}
+@media(max-width:620px){
+  #adminCouponList .admin-table{font-size:12px!important;min-width:720px!important}
+  #adminCouponList .admin-table th,#adminCouponList .admin-table td{padding:12px 10px!important}
+  #adminCouponList .admin-row-actions button{min-height:40px!important;padding:8px 10px!important;font-size:12px!important}
+}
