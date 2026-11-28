@@ -58,36 +58,30 @@ function showApp(ok){
   }
  }
 
-// بررسی نسخه منتشرشده بدون رفرش اجباری؛ کاربر خودش زمان بروزرسانی را انتخاب می‌کند.
-function assetSignature(html){
- return (html.match(/(?:assets\/(?:css\/(?:store|product)\.css|js\/(?:store|admin|coupons)\.js))\?v=[^"'\s]+/g)||[]).join("|");
-}
-function loadedAssetSignature(doc){
- return Array.from(doc.querySelectorAll('link[rel="stylesheet"],script[src]'))
-  .map(el=>el.getAttribute("href")||el.getAttribute("src")||"")
-  .filter(path=>/assets\/(?:css\/(?:store|product)\.css|js\/(?:store|admin|coupons)\.js)/.test(path))
-  .map(path=>path.replace(/^\.\//,""))
-  .join("|");
+// نسخه هر انتشار از فایل deploy-version.json خوانده می‌شود.
+let loadedDeployVersion="";
+async function readDeployVersion(){
+ try{
+  const response=await fetch("../deploy-version.json?check="+Date.now(),{cache:"no-store"});
+  if(!response.ok)return "";
+  const data=await response.json();
+  return data.sha||"";
+ }catch(_error){return "";}
 }
 async function checkForNewVersion(){
  if(updateCheckBusy||$("adminApp").style.display==="none")return;
- const frame=$("adminFrame");
- if(!frame.contentWindow||frame.src==="about:blank")return;
  updateCheckBusy=true;
  try{
-  const response=await fetch("../index.html?__niga_version_check="+Date.now(),{cache:"no-store"});
-  if(!response.ok)return;
-  const latest=assetSignature(await response.text());
-  const current=loadedAssetSignature(frame.contentDocument);
-  if(latest&&current&&latest!==current)refreshButton.hidden=false;
- }catch(_error){/* offline or temporary network error: retry on next interval */}
- finally{updateCheckBusy=false;}
+  const latest=await readDeployVersion();
+  if(latest&&loadedDeployVersion&&latest!==loadedDeployVersion)refreshButton.hidden=false;
+ }finally{updateCheckBusy=false;}
 }
-$("adminFrame").addEventListener("load",function(){
- const doc=this.contentDocument;
- if(!doc||this.src==="about:blank")return;
+$("adminFrame").addEventListener("load",async function(){
+ if(!this.contentWindow||this.src==="about:blank")return;
  iframeEdited=false;
+ loadedDeployVersion=await readDeployVersion();
  try{
+  const doc=this.contentDocument;
   doc.addEventListener("input",()=>{iframeEdited=true},true);
   doc.addEventListener("change",()=>{iframeEdited=true},true);
  }catch(_error){}
