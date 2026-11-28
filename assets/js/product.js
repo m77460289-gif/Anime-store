@@ -1,0 +1,20 @@
+(()=>{"use strict";
+const read=(key,fallback)=>{try{const value=JSON.parse(localStorage.getItem(key));return value==null?fallback:value}catch{return fallback}};
+const money=n=>new Intl.NumberFormat("fa-IR").format(Number(n)||0)+" تومان";
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const id=Number(new URLSearchParams(location.search).get("id"));
+const products=read("niga-demo-products",[]);
+const product=products.find(p=>Number(p.id)===id&&p.active!==false);
+const reviews=read("niga-demo-reviews",[]);
+const favorites=read("niga-demo-favorites",[]);
+const detail=document.getElementById("productDetail"),reviewList=document.getElementById("reviewList");
+const toast=message=>{const el=document.getElementById("detailToast");el.textContent=message;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2300)};
+if(!product){detail.innerHTML='<div class="detail-empty">این محصول پیدا نشد یا دیگر در فروشگاه موجود نیست.<br><a class="button button-primary" href="index.html#products">بازگشت به فروشگاه</a></div>';document.getElementById("detailReviews").hidden=true;return}
+document.title=product.name+" | فروشگاه نیگا";
+const price=Number(product.priceToman)||0,available=price>0&&(product.stock==null||Number(product.stock)>0),liked=favorites.map(Number).includes(id);
+detail.innerHTML='<article class="detail-layout"><div class="detail-visual"><img src="'+esc(product.imageUrl||"assets/images/gojo-poster.webp")+'" alt="'+esc(product.name)+'"></div><div class="detail-info"><span class="detail-category">'+esc(product.category||"محصول نیگا")+'</span><h1>'+esc(product.name)+'</h1><p class="detail-description">'+esc(product.description||"محصول منتخب فروشگاه نیگا.")+'</p><div class="detail-price">'+(price>0?money(price):"قیمت هنوز ثبت نشده")+'</div><div class="detail-stock">'+(product.stock==null?"موجودی محدود نشده":Number(product.stock)>0?"موجودی: "+new Intl.NumberFormat("fa-IR").format(product.stock)+" عدد":"فعلاً ناموجود")+'</div><div class="detail-actions"><button class="button button-primary" id="detailAdd" '+(!available?"disabled":"")+'>'+(available?"افزودن به سبد خرید":"در حال حاضر قابل سفارش نیست")+'</button><button class="detail-favorite '+(liked?"is-favorite":"")+'" id="detailFavorite">'+(liked?"♥ در علاقه‌مندی‌ها":"♡ افزودن به علاقه‌مندی‌ها")+'</button></div><p class="detail-notice">اطلاعات سبد خرید و علاقه‌مندی‌ها در همین مرورگر ذخیره می‌شود.</p></div></article>';
+const list=reviews.filter(r=>Number(r.productId)===id).sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));
+reviewList.innerHTML=list.length?'<div class="detail-review-list">'+list.map(r=>'<article class="detail-review"><div class="detail-review-head"><b>'+esc(r.name||"مشتری نیگا")+'</b><span class="review-stars">'+("★".repeat(Math.max(0,Math.min(5,Number(r.rating)||0))))+'</span></div><p>'+esc(r.comment)+'</p></article>').join("")+'</div>':'<div class="detail-empty">هنوز دیدگاهی برای این محصول ثبت نشده است.</div>';
+document.getElementById("detailAdd")?.addEventListener("click",()=>{const cart=read("niga-demo-cart",[]);const item=cart.find(x=>Number(x.id)===id);if(item)item.qty=Math.max(1,Number(item.qty)||1)+1;else cart.push({id,qty:1});localStorage.setItem("niga-demo-cart",JSON.stringify(cart));toast("محصول به سبد خرید اضافه شد.")});
+document.getElementById("detailFavorite").addEventListener("click",()=>{let items=read("niga-demo-favorites",[]).map(Number);items=items.includes(id)?items.filter(x=>x!==id):[...items,id];localStorage.setItem("niga-demo-favorites",JSON.stringify(items));const btn=document.getElementById("detailFavorite"),on=items.includes(id);btn.classList.toggle("is-favorite",on);btn.textContent=on?"♥ در علاقه‌مندی‌ها":"♡ افزودن به علاقه‌مندی‌ها";toast(on?"به علاقه‌مندی‌ها اضافه شد.":"از علاقه‌مندی‌ها حذف شد.")});
+})();
