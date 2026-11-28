@@ -32,7 +32,43 @@ function saveProduct(e){e.preventDefault();const f=new FormData(e.currentTarget)
 function checkout(e){e.preventDefault();if(!current){$("#checkoutFeedback").textContent="ابتدا وارد حساب کاربری شو.";return}const items=cartProducts();if(!items.length){$("#checkoutFeedback").textContent="سبد خرید خالی است.";return}if(items.some(p=>p.priceToman<=0)){ $("#checkoutFeedback").textContent="قیمت یکی از محصولات مشخص نشده است.";return}for(const p of items)if(p.stock!=null&&p.stock<p.qty){$("#checkoutFeedback").textContent="موجودی "+p.name+" کافی نیست.";return}const f=new FormData(e.currentTarget),totalToman=items.reduce((n,p)=>n+p.priceToman*p.qty,0),order={id:Math.max(0,...orders.map(o=>o.id))+1,userEmail:current.email,customerName:String(f.get("fullName")).trim(),phone:String(f.get("phone")).trim(),address:String(f.get("address")).trim(),note:String(f.get("note")).trim(),items:items.map(p=>({productId:p.id,name:p.name,priceToman:p.priceToman,quantity:p.qty})),totalToman,status:"PENDING",createdAt:new Date().toISOString()};if(order.customerName.length<2||order.address.length<8){$("#checkoutFeedback").textContent="نام و نشانی کامل را وارد کن.";return}for(const item of items){const p=products.find(x=>x.id===item.id);if(p.stock!=null)p.stock-=item.qty}orders.push(order);cart=[];persist();renderProducts();renderCart();renderMyOrders();renderAdminOrders();$("#checkoutFeedback").textContent="سفارش #"+order.id+" ثبت شد. (نسخه نمایشی کلاسی؛ بدون پرداخت واقعی)";toast("سفارش نمایشی ثبت شد.");setTimeout(()=>{$("#checkoutModal").close();openAccount()},900)}
 function contact(e){e.preventDefault();const f=new FormData(e.currentTarget),m={id:Date.now(),name:f.get("name"),email:f.get("email"),subject:f.get("subject"),message:f.get("message"),createdAt:new Date().toISOString()};messages.push(m);persist();$("#contactFeedback").textContent="پیامت در مرورگر ذخیره شد. ممنون از ارتباطت!";e.currentTarget.reset()}
 document.addEventListener("click",e=>{const a=e.target.closest("[data-add]");if(a){add(a.dataset.add);return}const q=e.target.closest("[data-qty]");if(q){const id=Number(q.dataset.qty),item=cart.find(x=>x.id===id);if(item){item.qty+=Number(q.dataset.delta);if(item.qty<1)cart=cart.filter(x=>x.id!==id);renderCart()}return}const r=e.target.closest("[data-remove]");if(r){cart=cart.filter(x=>x.id!==Number(r.dataset.remove));renderCart();return}const c=e.target.closest("[data-close]");if(c){$("#"+c.dataset.close).close();return}const edit=e.target.closest("[data-edit-product]");if(edit){editProduct(edit.dataset.editProduct);return}const del=e.target.closest("[data-delete-product]");if(del&&current?.role==="ADMIN"){const p=products.find(x=>x.id===Number(del.dataset.deleteProduct));if(p){p.active=false;persist();renderProducts();toast("محصول حذف شد.")}}});
-document.addEventListener("change",e=>{const s=e.target.closest("[data-order-status]");if(s&&current?.role==="ADMIN"){const o=orders.find(x=>x.id===Number(s.dataset.orderStatus));if(o){o.status=s.value;persist();renderMyOrders();renderAdminOrders();toast("وضعیت سفارش تغییر کرد.")}}});
+document.addEventListener("change",e=>{
+const select=e.target.closest("[data-order-status]");
+if(!select||current?.role!=="ADMIN")return;
+const order=orders.find(x=>x.id===Number(select.dataset.orderStatus));
+if(!order)return;
+const previous=order.status||"PENDING",next=select.value;
+if(previous===next)return;
+const items=Array.isArray(order.items)?order.items:[];
+if(previous!=="CANCELLED"&&next==="CANCELLED"){
+  for(const item of items){
+    const product=products.find(p=>p.id===Number(item.productId));
+    if(product&&product.stock!=null)product.stock+=Math.max(1,Number(item.quantity)||1);
+  }
+  order.stockReturnedAt=new Date().toISOString();
+}else if(previous==="CANCELLED"&&next!=="CANCELLED"){
+  const unavailable=items.find(item=>{
+    const product=products.find(p=>p.id===Number(item.productId));
+    return product&&product.stock!=null&&product.stock<Math.max(1,Number(item.quantity)||1);
+  });
+  if(unavailable){
+    select.value="CANCELLED";
+    toast("موجودی کافی برای فعال‌کردن دوباره این سفارش وجود ندارد.");
+    return;
+  }
+  for(const item of items){
+    const product=products.find(p=>p.id===Number(item.productId));
+    if(product&&product.stock!=null)product.stock-=Math.max(1,Number(item.quantity)||1);
+  }
+  delete order.stockReturnedAt;
+}
+order.status=next;
+persist();
+renderProducts();
+renderMyOrders();
+renderAdminOrders();
+toast("وضعیت سفارش تغییر کرد.");
+});
 $("#mobileMenu").addEventListener("click",()=>$("#mainNav").classList.toggle("open"));$$("#mainNav a").forEach(a=>a.addEventListener("click",()=>$("#mainNav").classList.remove("open")));
 $("#cartOpen").addEventListener("click",()=>{$("#cartOverlay").classList.add("show");$("#cartOverlay").setAttribute("aria-hidden","false")});function closeCart(){$("#cartOverlay").classList.remove("show");$("#cartOverlay").setAttribute("aria-hidden","true")}$("#cartClose").addEventListener("click",closeCart);$("#cartOverlay").addEventListener("click",e=>{if(e.target.id==="cartOverlay")closeCart()});
 $("#accountOpen").addEventListener("click",openAccount);$("#footerAccount").addEventListener("click",openAccount);$("#footerOrders").addEventListener("click",openAccount);$("#switchAuth").addEventListener("click",()=>setMode(authMode==="login"?"register":"login"));$("#authForm").addEventListener("submit",submitAuth);$("#contactForm").addEventListener("submit",contact);$("#checkoutForm").addEventListener("submit",checkout);$("#productAdminForm").addEventListener("submit",saveProduct);
