@@ -30,7 +30,7 @@ $("#favoriteTotal").textContent=new Intl.NumberFormat("fa-IR").format(favorites.
 write(KEYS.favorites,favorites);
 }
 function renderProducts(){
-const admin=current?.role==="ADMIN",list=visible();
+const admin=isAdminPage&&current?.role==="ADMIN",list=visible();
 $("#productGrid").innerHTML=list.length?list.map(p=>productCard(p,admin)).join(""):'<div class="empty-products">محصولی با این مشخصات پیدا نشد.</div>';
 $("#productCount").textContent=new Intl.NumberFormat("fa-IR").format(products.filter(p=>p.active!==false).length)+" محصول";
 $("#apiNote").textContent=window.nigaSupabase?"محصولات از پایگاه داده نیگا بارگذاری می‌شوند.":"اتصال پایگاه داده در دسترس نیست؛ فهرست ذخیره‌شده نمایش داده می‌شود.";
