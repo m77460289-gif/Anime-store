@@ -33,14 +33,6 @@ function renderAdminCoupons(){
  list.map(c=>'<tr><td><b dir="ltr">'+esc(c.code)+'</b></td><td>'+(c.type==="percent"?esc(c.value)+"٪":money(c.value))+'</td><td>'+money(c.minOrder||0)+'</td><td>'+Number(c.usedCount||0)+' / '+(Number(c.usageLimit)>0?Number(c.usageLimit):"∞")+'</td><td>'+esc(c.expiresAt||"بدون انقضا")+'</td><td>'+(c.active===false?"غیرفعال":"فعال")+'</td><td class="admin-row-actions"><button type="button" data-coupon-toggle="'+esc(c.code)+'">'+(c.active===false?"فعال‌سازی":"غیرفعال‌سازی")+'</button><button type="button" class="danger" data-coupon-delete="'+esc(c.code)+'">حذف</button></td></tr>').join("")+
  '</tbody></table></div>';
 }
-function addAdminTab(){
- const nav=$(".admin-tabs"),workspace=$(".admin-workspace");
- if(!nav||!workspace||$('[data-admin-tab="coupons"]'))return;
- const tab=document.createElement("button");tab.type="button";tab.className="admin-tab";tab.dataset.adminTab="coupons";tab.textContent="کدهای تخفیف";nav.appendChild(tab);
- const view=document.createElement("section");view.className="admin-view";view.dataset.adminView="coupons";
- view.innerHTML='<div class="admin-card admin-coupon-card"><h3>ساخت کد تخفیف</h3><form id="couponAdminForm" class="admin-coupon-form"><label>کد تخفیف<input name="code" required maxlength="40" placeholder="NIGA20"></label><label>نوع تخفیف<select name="type"><option value="percent">درصدی</option><option value="fixed">مبلغ ثابت (تومان)</option></select></label><label>مقدار تخفیف<input name="value" type="number" min="1" required></label><label>حداقل مبلغ خرید (تومان)<input name="minOrder" type="number" min="0" value="0"></label><label>سقف تعداد استفاده (۰ = نامحدود)<input name="usageLimit" type="number" min="0" value="0"></label><label>تاریخ انقضا<input name="expiresAt" type="date"></label><button class="button button-primary">ذخیره کد</button><p id="couponAdminFeedback" class="form-feedback"></p></form></div><div class="admin-card admin-list-card"><h3>کدهای ثبت‌شده</h3><div id="adminCouponList"></div></div>';
- workspace.appendChild(view);
-}
 document.addEventListener("click",e=>{
  if(e.target.closest("#applyCoupon")){applyCoupon();return}
  const del=e.target.closest("[data-coupon-delete]");
@@ -60,5 +52,5 @@ document.addEventListener("submit",e=>{
 });
 const shell=$(".admin-shell");
 if(shell){shell.addEventListener("click",e=>{if(e.target.closest('[data-admin-tab="coupons"]'))renderAdminCoupons()});}
-addAdminTab();renderAdminCoupons();
+renderAdminCoupons();
 })();
