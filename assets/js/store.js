@@ -42,7 +42,7 @@ function add(id){const p=products.find(x=>String(x.id)===String(id));if(!p)retur
 function statusLabel(s){return ({PENDING:"در انتظار تأیید",PROCESSING:"در حال آماده‌سازی",SHIPPED:"ارسال شده",COMPLETED:"تکمیل شده",CANCELLED:"لغو شده"})[s]||s}
 function renderMyOrders(){const list=orders.filter(o=>o.userEmail===current?.email).sort((a,b)=>b.id-a.id);$("#myOrders").innerHTML=list.length?list.map(o=>'<div class="order-card"><b>سفارش #'+o.id+'</b><small>'+statusLabel(o.status)+' · '+money(o.totalToman)+'</small></div>').join(""):'<p class="muted">هنوز سفارشی ثبت نکرده‌ای.</p>'}
 function renderAdminOrders(){const box=$("#adminOrders");if(!box)return;const dateText=value=>{if(!value)return "تاریخ نامشخص";const date=new Date(value);return Number.isNaN(date.getTime())?"تاریخ نامشخص":new Intl.DateTimeFormat("fa-IR",{dateStyle:"medium",timeStyle:"short"}).format(date)};box.innerHTML=orders.length?orders.slice().sort((a,b)=>b.id-a.id).map(o=>{const items=Array.isArray(o.items)?o.items:[];const itemHtml=items.length?items.map(item=>'<li><span>'+esc(item.name||"محصول")+' × '+new Intl.NumberFormat("fa-IR").format(Number(item.quantity)||1)+'</span><b>'+money((Number(item.priceToman)||0)*(Number(item.quantity)||1))+'</b></li>').join(""):'<li>جزئیات اقلام برای این سفارش ذخیره نشده است.</li>';return '<article class="admin-order"><div class="admin-order-heading"><b>سفارش #'+esc(o.id)+' · '+esc(o.customerName||"بدون نام")+'</b><time>'+dateText(o.createdAt)+'</time></div><div class="admin-order-contact"><span>تلفن: '+esc(o.phone||"ثبت نشده")+'</span><span>ایمیل: '+esc(o.userEmail||"ثبت نشده")+'</span></div><div class="admin-order-items"><strong>اقلام سفارش</strong><ul>'+itemHtml+'</ul></div><div class="admin-order-total">مبلغ کل: <b>'+money(o.totalToman)+'</b></div><div class="admin-order-address"><strong>نشانی تحویل</strong><p>'+esc(o.address||"ثبت نشده")+'</p></div>'+(o.note?'<div class="admin-order-note"><strong>توضیحات مشتری</strong><p>'+esc(o.note)+'</p></div>':"")+'<label class="admin-order-status">وضعیت سفارش<select data-order-status="'+esc(o.id)+'"><option value="PENDING" '+(o.status==="PENDING"?"selected":"")+'>در انتظار تأیید</option><option value="PROCESSING" '+(o.status==="PROCESSING"?"selected":"")+'>در حال آماده‌سازی</option><option value="SHIPPED" '+(o.status==="SHIPPED"?"selected":"")+'>ارسال شده</option><option value="COMPLETED" '+(o.status==="COMPLETED"?"selected":"")+'>تکمیل شده</option><option value="CANCELLED" '+(o.status==="CANCELLED"?"selected":"")+'>لغو شده</option></select></label></article>'}).join(""):'<p class="muted">هنوز سفارشی ثبت نشده است.</p>'}
-function showAdmin(){const isAdmin=current?.role==="ADMIN";const panel=$("#adminSection");if(panel)panel.hidden=!(isAdmin&&isAdminPage);const nav=$("#adminNav");if(nav)nav.hidden=true;if(isAdminPage&&!authResolved)return;if(isAdminPage&&!isAdmin){if(window.parent!==window)window.parent.location.replace("index.html");else location.replace("index.html");return}if(isAdmin)renderAdminOrders();renderProducts()}
+function showAdmin(){const isAdmin=current?.role==="ADMIN";const panel=$("#adminSection");if(panel)panel.hidden=!(isAdmin&&isAdminPage);const nav=$("#adminNav");if(nav)nav.hidden=true;if(isAdminPage&&!authResolved)return;if(isAdminPage&&!isAdmin){if(panel)panel.hidden=true;return}if(isAdmin)renderAdminOrders();renderProducts()}
 function syncAccount(){const yes=!!current;$("#authForm").hidden=yes;$("#switchAuth").hidden=yes;$("#accountContent").hidden=!yes;if(yes){$("#accountUser").innerHTML="<b>"+esc(current.name)+"</b><small>"+esc(current.email)+"</small>";renderMyOrders()}showAdmin()}
 function openAccount(){$("#accountModal").showModal();syncAccount()}
 function setMode(mode){authMode=mode;$("#authNameWrap").hidden=mode==="login";$("#authNameWrap").querySelector("input").required=mode==="register";$("#authTitle").textContent=mode==="login"?"ورود به حساب":"ساخت حساب جدید";$("#authSubmit").textContent=mode==="login"?"ورود":"ثبت‌نام";$("#switchAuth").textContent=mode==="login"?"حساب نداری؟ ثبت‌نام کن":"حساب داری؟ وارد شو";$("#authFeedback").textContent=""}
@@ -89,48 +89,71 @@ async function saveProduct(e){
   console.error("Save product:",error);
  }finally{if(button)button.disabled=false}
 }
-function checkout(e){e.preventDefault();if(!current){$("#checkoutFeedback").textContent="ابتدا وارد حساب کاربری شو.";return}const items=cartProducts();if(!items.length){$("#checkoutFeedback").textContent="سبد خرید خالی است.";return}if(items.some(p=>p.priceToman<=0)){ $("#checkoutFeedback").textContent="قیمت یکی از محصولات مشخص نشده است.";return}for(const p of items)if(p.stock!=null&&p.stock<p.qty){$("#checkoutFeedback").textContent="موجودی "+p.name+" کافی نیست.";return}const f=new FormData(e.currentTarget),subtotalToman=items.reduce((n,p)=>n+p.priceToman*p.qty,0),couponData=read("niga-demo-applied-coupon",null),couponList=read("niga-demo-coupons",[]),coupon=couponData?couponList.find(c=>c.code===couponData.code&&c.active!==false):null,discountToman=coupon?Math.min(subtotalToman,coupon.type==="percent"?Math.floor(subtotalToman*Number(coupon.value)/100):Number(coupon.value)||0):0,totalToman=subtotalToman-discountToman,order={id:Math.max(0,...orders.map(o=>o.id))+1,userEmail:current.email,customerName:String(f.get("fullName")).trim(),phone:String(f.get("phone")).trim(),address:String(f.get("address")).trim(),note:String(f.get("note")).trim(),items:items.map(p=>({productId:p.id,name:p.name,priceToman:p.priceToman,quantity:p.qty})),subtotalToman,discountToman,couponCode:coupon?coupon.code:"",totalToman,status:"PENDING",createdAt:new Date().toISOString()};if(order.customerName.length<2||order.address.length<8){$("#checkoutFeedback").textContent="نام و نشانی کامل را وارد کن.";return}for(const item of items){const p=products.find(x=>x.id===item.id);if(p.stock!=null)p.stock-=item.qty}orders.push(order);if(coupon){coupon.usedCount=(Number(coupon.usedCount)||0)+1;write("niga-demo-coupons",couponList)}localStorage.removeItem("niga-demo-applied-coupon");cart=[];persist();renderProducts();renderCart();renderMyOrders();renderAdminOrders();$("#checkoutFeedback").textContent="سفارش #"+order.id+" ثبت شد. (نسخه نمایشی کلاسی؛ بدون پرداخت واقعی)";toast("سفارش نمایشی ثبت شد.");setTimeout(()=>{$("#checkoutModal").close();openAccount()},900)}
+async function checkout(e){
+ e.preventDefault();
+ const feedback=$("#checkoutFeedback");
+ if(!current){feedback.textContent="ابتدا وارد حساب کاربری شو.";return}
+ const items=cartProducts();
+ if(!items.length){feedback.textContent="سبد خرید خالی است.";return}
+ if(items.some(p=>!p.priceToman)){feedback.textContent="قیمت یکی از محصولات مشخص نشده است.";return}
+ const f=new FormData(e.currentTarget),customerName=String(f.get("fullName")||"").trim(),phone=String(f.get("phone")||"").trim(),address=String(f.get("address")||"").trim(),note=String(f.get("note")||"").trim();
+ if(customerName.length<2||address.length<8||phone.replace(/\\D/g,"").length<8){feedback.textContent="نام، شماره تماس و نشانی معتبر وارد کن.";return}
+ const client=window.nigaSupabase;
+ if(!client){feedback.textContent="اتصال به پایگاه داده برقرار نیست.";return}
+ const submit=e.currentTarget.querySelector('button[type="submit"]');
+ if(submit)submit.disabled=true;
+ feedback.textContent="در حال بررسی موجودی و ثبت امن سفارش...";
+ try{
+  const applied=read("niga-demo-applied-coupon",null);
+  const {data,error}=await client.rpc("place_order",{
+   p_items:items.map(item=>({product_id:item.id,quantity:item.qty})),
+   p_customer_name:customerName,
+   p_customer_phone:phone,
+   p_shipping_address:{address},
+   p_notes:note||null,
+   p_coupon_code:applied?.code||null
+  });
+  if(error)throw error;
+  const created=Array.isArray(data)?data[0]:data;
+  if(!created?.order_number)throw new Error("پاسخ ثبت سفارش از سرور کامل نبود.");
+  cart=[];
+  localStorage.removeItem("niga-demo-applied-coupon");
+  persist();
+  await loadOrdersFromSupabase();
+  await loadCatalogFromSupabase();
+  renderCart();renderMyOrders();renderAdminOrders();
+  feedback.textContent="سفارش #"+created.order_number+" با موفقیت در سرور ثبت شد.";
+  toast("سفارش با موفقیت ثبت شد.");
+  e.currentTarget.reset();
+  setTimeout(()=>{$("#checkoutModal").close();openAccount()},900);
+ }catch(error){
+  feedback.textContent=error.message||"ثبت سفارش انجام نشد.";
+  console.error("Checkout:",error);
+ }finally{if(submit)submit.disabled=false}
+}
 function contact(e){e.preventDefault();const f=new FormData(e.currentTarget),m={id:Date.now(),name:f.get("name"),email:f.get("email"),subject:f.get("subject"),message:f.get("message"),createdAt:new Date().toISOString()};messages.push(m);persist();$("#contactFeedback").textContent="پیامت در مرورگر ذخیره شد. ممنون از ارتباطت!";e.currentTarget.reset()}
 document.addEventListener("submit",e=>{const form=e.target.closest("[data-review-form]");if(!form)return;e.preventDefault();if(!current){toast("برای ثبت نظر ابتدا وارد حساب شو.");openAccount();return}const productId=String(form.dataset.reviewForm),data=new FormData(form),comment=String(data.get("comment")||"").trim(),rating=Number(data.get("rating"));if(comment.length<3||comment.length>700||rating<1||rating>5){toast("متن نظر یا امتیاز معتبر نیست.");return}const existing=reviews.find(r=>String(r.productId)===String(productId)&&r.userEmail===current.email);const review={id:existing?.id||Date.now(),productId,userEmail:current.email,name:current.name,rating,comment,createdAt:Date.now()};if(existing)Object.assign(existing,review);else reviews.push(review);persist();renderProducts();toast(existing?"نظرت به‌روزرسانی شد.":"نظرت ثبت شد؛ ممنون از همراهیت!");});
 document.addEventListener("click",e=>{const login=e.target.closest("[data-review-login]");if(login){openAccount();return}const fav=e.target.closest("[data-favorite]");if(fav){const id=String(fav.dataset.favorite);favorites=favorites.map(String).includes(id)?favorites.filter(x=>String(x)!==id):[...favorites,id];renderProducts();toast(favorites.map(String).includes(id)?"به علاقه‌مندی‌ها اضافه شد.":"از علاقه‌مندی‌ها حذف شد.");return}const a=e.target.closest("[data-add]");if(a){add(a.dataset.add);return}const q=e.target.closest("[data-qty]");if(q){const id=String(q.dataset.qty),item=cart.find(x=>String(x.id)===id);if(item){item.qty+=Number(q.dataset.delta);if(item.qty<1)cart=cart.filter(x=>String(x.id)!==id);renderCart()}return}const r=e.target.closest("[data-remove]");if(r){cart=cart.filter(x=>String(x.id)!==String(r.dataset.remove));renderCart();return}const c=e.target.closest("[data-close]");if(c){$("#"+c.dataset.close).close();return}const edit=e.target.closest("[data-edit-product]");if(edit){editProduct(edit.dataset.editProduct);return}const del=e.target.closest("[data-delete-product]");if(del&&current?.role==="ADMIN"){deactivateProduct(del.dataset.deleteProduct)}});
 document.addEventListener("click",e=>{const card=e.target.closest("[data-product-card]");if(!card||e.target.closest("button,a,input,textarea,select,summary,form,details"))return;location.href="product.html?id="+encodeURIComponent(card.dataset.productCard)});
 document.addEventListener("keydown",e=>{const card=e.target.closest("[data-product-card]");if(card&&!e.target.closest("button,a,input,textarea,select,summary,form,details")&&(e.key==="Enter"||e.key===" ")){e.preventDefault();location.href="product.html?id="+encodeURIComponent(card.dataset.productCard)}});
-document.addEventListener("change",e=>{
-const select=e.target.closest("[data-order-status]");
-if(!select||current?.role!=="ADMIN")return;
-const order=orders.find(x=>x.id===Number(select.dataset.orderStatus));
-if(!order)return;
-const previous=order.status||"PENDING",next=select.value;
-if(previous===next)return;
-const items=Array.isArray(order.items)?order.items:[];
-if(previous!=="CANCELLED"&&next==="CANCELLED"){
-  for(const item of items){
-    const product=products.find(p=>String(p.id)===String(item.productId));
-    if(product&&product.stock!=null)product.stock+=Math.max(1,Number(item.quantity)||1);
-  }
-  order.stockReturnedAt=new Date().toISOString();
-}else if(previous==="CANCELLED"&&next!=="CANCELLED"){
-  const unavailable=items.find(item=>{
-    const product=products.find(p=>String(p.id)===String(item.productId));
-    return product&&product.stock!=null&&product.stock<Math.max(1,Number(item.quantity)||1);
-  });
-  if(unavailable){
-    select.value="CANCELLED";
-    toast("موجودی کافی برای فعال‌کردن دوباره این سفارش وجود ندارد.");
-    return;
-  }
-  for(const item of items){
-    const product=products.find(p=>String(p.id)===String(item.productId));
-    if(product&&product.stock!=null)product.stock-=Math.max(1,Number(item.quantity)||1);
-  }
-  delete order.stockReturnedAt;
-}
-order.status=next;
-persist();
-renderProducts();
-renderMyOrders();
-renderAdminOrders();
-toast("وضعیت سفارش تغییر کرد.");
+document.addEventListener("change",async e=>{
+ const select=e.target.closest("[data-order-status]");
+ if(!select||current?.role!=="ADMIN")return;
+ const order=orders.find(item=>String(item.id)===String(select.dataset.orderStatus));
+ if(!order)return;
+ const next=select.value,previous=order.status||"PENDING";
+ if(previous===next)return;
+ const statusMap={PENDING:"pending",PROCESSING:"processing",SHIPPED:"shipped",COMPLETED:"delivered",CANCELLED:"cancelled"};
+ select.disabled=true;
+ try{
+  const {error}=await window.nigaSupabase.from("orders").update({status:statusMap[next]}).eq("id",order.uuid);
+  if(error)throw error;
+  await loadOrdersFromSupabase();
+  toast("وضعیت سفارش در پایگاه داده به‌روزرسانی شد.");
+ }catch(error){
+  select.value=previous;
+  toast("تغییر وضعیت انجام نشد: "+(error.message||"خطای سرور"));
+ }finally{select.disabled=false}
 });
 $("#mobileMenu").addEventListener("click",()=>$("#mainNav").classList.toggle("open"));$$("#mainNav a").forEach(a=>a.addEventListener("click",()=>$("#mainNav").classList.remove("open")));
 $("#cartOpen").addEventListener("click",()=>{$("#cartOverlay").classList.add("show");$("#cartOverlay").setAttribute("aria-hidden","false")});function closeCart(){$("#cartOverlay").classList.remove("show");$("#cartOverlay").setAttribute("aria-hidden","true")}$("#cartClose").addEventListener("click",closeCart);$("#cartOverlay").addEventListener("click",e=>{if(e.target.id==="cartOverlay")closeCart()});
@@ -138,9 +161,28 @@ $("#accountOpen").addEventListener("click",openAccount);$("#footerAccount").addE
 $("#checkoutOpen").addEventListener("click",()=>{closeCart();if(!current){toast("برای ثبت سفارش ابتدا وارد حساب شو.");openAccount();return}if(!cart.length){toast("سبد خرید خالی است.");return}$("#checkoutModal").showModal()});
 $("#logoutButton").addEventListener("click",async()=>{if(window.nigaSupabase)await window.nigaSupabase.auth.signOut();current=null;authResolved=true;persist();if(isAdminPage){if(window.parent!==window)window.parent.location.replace("index.html");else location.replace("index.html");return}syncAccount();toast("از حساب خارج شدی.")});
 $("#searchInput").addEventListener("input",renderProducts);$("#sortProducts").addEventListener("change",renderProducts);$("#categoryFilters").addEventListener("click",e=>{const b=e.target.closest("[data-category]");if(!b)return;category=b.dataset.category;$$(".filter-chip").forEach(x=>x.classList.toggle("active",x===b));renderProducts()});
+async function loadOrdersFromSupabase(){
+ const client=window.nigaSupabase;
+ if(!client||!current)return;
+ const {data,error}=await client.from("orders").select("id,order_number,user_id,status,payment_status,customer_name,customer_phone,shipping_address,subtotal,discount_amount,shipping_cost,total,notes,created_at,order_items(id,product_id,product_name,product_image,unit_price,quantity,line_total)").order("created_at",{ascending:false});
+ if(error)throw error;
+ orders=(data||[]).map(row=>({
+  id:Number(row.order_number),uuid:row.id,userEmail:row.user_id===current.id?current.email:row.user_id,
+  customerName:row.customer_name,phone:row.customer_phone,
+  address:row.shipping_address?.address||"",note:row.notes||"",
+  subtotalToman:Number(row.subtotal)||0,discountToman:Number(row.discount_amount)||0,
+  totalToman:Number(row.total)||0,
+  status:({pending:"PENDING",confirmed:"PROCESSING",processing:"PROCESSING",shipped:"SHIPPED",delivered:"COMPLETED",cancelled:"CANCELLED"})[row.status]||"PENDING",
+  createdAt:row.created_at,
+  items:(row.order_items||[]).map(item=>({productId:item.product_id,name:item.product_name,imageUrl:item.product_image,priceToman:Number(item.unit_price)||0,quantity:Number(item.quantity)||1}))
+ }));
+ write(KEYS.orders,orders);
+ renderMyOrders();renderAdminOrders();
+ window.dispatchEvent(new CustomEvent("niga:catalog-updated"));
+}
 async function setAuthenticatedUser(user){if(!user){current=null;persist();return}const {data:profile,error}=await window.nigaSupabase.from("profiles").select("id,full_name,role,phone").eq("id",user.id).single();if(error)throw error;current={id:user.id,name:profile.full_name||user.email.split("@")[0],email:user.email,role:profile.role==="admin"?"ADMIN":"CUSTOMER",phone:profile.phone||""};persist()}
 function mapProductRow(row,categoryMap){return{id:row.id,slug:row.slug,categoryId:row.category_id||null,name:row.name,description:row.description||"",category:categoryMap.get(row.category_id)||"سایر",priceToman:Number(row.price)||0,compareAtPrice:row.compare_at_price==null?null:Number(row.compare_at_price),stock:row.stock,imageUrl:row.image_url||"assets/images/product-poster-01.svg",active:row.is_active!==false,featured:row.is_featured===true,createdAt:row.created_at}}
 async function loadCatalogFromSupabase(){const client=window.nigaSupabase;if(!client)return;const {data:categoryRows,error:categoryError}=await client.from("categories").select("id,name,slug,is_active,sort_order").order("sort_order",{ascending:true});if(categoryError)throw categoryError;const categoryMap=new Map((categoryRows||[]).map(item=>[item.id,item.name]));categories=categoryRows||[];write("niga-demo-categories",categories);const {data:productRows,error:productError}=await client.from("products").select("id,category_id,name,slug,description,price,compare_at_price,stock,image_url,is_active,is_featured,created_at").order("created_at",{ascending:false});if(productError)throw productError;products=(productRows||[]).map(row=>mapProductRow(row,categoryMap));write(KEYS.products,products);const filters=$("#categoryFilters");if(filters){filters.innerHTML='<button class="filter-chip active" data-category="all">همه</button>'+(categories.filter(item=>item.is_active!==false).map(item=>'<button class="filter-chip" data-category="'+esc(item.name)+'">'+esc(item.name)+'</button>').join(""))}renderProducts();window.dispatchEvent(new CustomEvent("niga:catalog-updated"))}
-async function initializeAuth(){const client=window.nigaSupabase;if(!client){authResolved=true;$("#apiNote").textContent=window.nigaSupabaseError||"اتصال به پایگاه داده در دسترس نیست.";syncAccount();return}try{const {data,error}=await client.auth.getSession();if(error)throw error;if(data.session?.user)await setAuthenticatedUser(data.session.user);else{current=null;persist()}}catch(error){console.error("Auth initialization:",error);current=null}authResolved=true;syncAccount();try{await loadCatalogFromSupabase()}catch(error){console.error("Catalog load failed:",error);$("#apiNote").textContent="بارگذاری محصولات از پایگاه داده ناموفق بود: "+(error.message||"خطای ارتباط")}}
+async function initializeAuth(){const client=window.nigaSupabase;if(!client){authResolved=true;$("#apiNote").textContent=window.nigaSupabaseError||"اتصال به پایگاه داده در دسترس نیست.";syncAccount();return}try{const {data,error}=await client.auth.getSession();if(error)throw error;if(data.session?.user)await setAuthenticatedUser(data.session.user);else{current=null;persist()}}catch(error){console.error("Auth initialization:",error);current=null}authResolved=true;syncAccount();try{await loadCatalogFromSupabase();await loadOrdersFromSupabase()}catch(error){console.error("Initial data load failed:",error);$("#apiNote").textContent="بارگذاری اطلاعات فروشگاه ناموفق بود: "+(error.message||"خطای ارتباط")}}
 persist();setMode("login");renderProducts();renderCart();initializeAuth();
 })();
