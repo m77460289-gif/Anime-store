@@ -91,16 +91,17 @@ async function saveProduct(e){
 }
 async function checkout(e){
  e.preventDefault();
+ const form=e.currentTarget;
  const feedback=$("#checkoutFeedback");
  if(!current){feedback.textContent="ابتدا وارد حساب کاربری شو.";return}
  const items=cartProducts();
  if(!items.length){feedback.textContent="سبد خرید خالی است.";return}
  if(items.some(p=>!p.priceToman)){feedback.textContent="قیمت یکی از محصولات مشخص نشده است.";return}
- const f=new FormData(e.currentTarget),customerName=String(f.get("fullName")||"").trim(),phone=String(f.get("phone")||"").trim(),address=String(f.get("address")||"").trim(),note=String(f.get("note")||"").trim();
+ const f=new FormData(form),customerName=String(f.get("fullName")||"").trim(),phone=String(f.get("phone")||"").trim(),address=String(f.get("address")||"").trim(),note=String(f.get("note")||"").trim();
  if(customerName.length<2||address.length<8||phone.replace(/[^0-9۰-۹]/g,"").length<8){feedback.textContent="نام، شماره تماس و نشانی معتبر وارد کن.";return}
  const client=window.nigaSupabase;
  if(!client){feedback.textContent="اتصال به پایگاه داده برقرار نیست.";return}
- const submit=e.currentTarget.querySelector('button[type="submit"]');
+ const submit=form.querySelector('button[type="submit"]');
  if(submit)submit.disabled=true;
  feedback.textContent="در حال بررسی موجودی و ثبت امن سفارش...";
  try{
@@ -124,7 +125,7 @@ async function checkout(e){
   renderCart();renderMyOrders();renderAdminOrders();
   feedback.textContent="سفارش #"+created.order_number+" با موفقیت در سرور ثبت شد.";
   toast("سفارش با موفقیت ثبت شد.");
-  e.currentTarget.reset();
+  form.reset();
   setTimeout(()=>{$("#checkoutModal").close();openAccount()},900);
  }catch(error){
   feedback.textContent=error.message||"ثبت سفارش انجام نشد.";
