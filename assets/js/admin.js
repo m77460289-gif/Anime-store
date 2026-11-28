@@ -277,11 +277,7 @@
     if (!select) return;
     const current = select.value;
     const active = categories.filter(item => item.is_active !== false);
-    select.innerHTML = active.map(item => '<option value="'+esc(item.name)+'">'+esc(item.name)+'</option>').join("");
-    if (current && !active.some(item => item.name === current)) {
-      const inactive = categories.find(item => item.name === current);
-      if (inactive) select.insertAdjacentHTML("beforeend", '<option value="'+esc(inactive.name)+'" disabled>'+esc(inactive.name)+' (غیرفعال)</option>');
-    }
+    select.innerHTML = active.map(item => '<option value="'+esc(item.name)+'">'+esc(item.name)+'</option>').join("") + categories.filter(item => item.is_active === false).map(item => '<option value="'+esc(item.name)+'" disabled>'+esc(item.name)+' (غیرفعال)</option>').join("");
     if (current && [...select.options].some(option => option.value === current)) select.value = current;
   }
 
@@ -328,7 +324,7 @@
     const sequence = ++renderSequence;
     const products = read("niga-demo-products", []);
     const orders = read("niga-demo-orders", []);
-    let users = [], messages = [], reviews = [];
+    let users = [], messages = [], reviews = [], categoryRows = [];
     const client = window.nigaSupabase;
     if (client) {
       try {
@@ -342,6 +338,7 @@
         if (messageResult.error) throw messageResult.error;
         if (reviewResult.error) throw reviewResult.error;
         if (categoryResult.error) throw categoryResult.error;
+        categoryRows = categoryResult.data || [];
         users = (profileResult.data||[]).map(u=>({id:u.id,name:u.full_name||"مشتری",email:u.id,phone:u.phone,role:u.role==="admin"?"ADMIN":"CUSTOMER"}));
         messages = (messageResult.data||[]).map(m=>({id:m.id,name:m.customer_name,email:m.customer_email,subject:m.subject,message:m.message,createdAt:m.created_at,status:m.status}));
         reviews = (reviewResult.data||[]).map(r=>({id:r.id,productId:r.product_id,userEmail:r.user_id,name:"مشتری · "+String(r.user_id).slice(0,8),rating:r.rating,comment:r.comment,approved:r.is_approved,createdAt:new Date(r.created_at).getTime()}));
@@ -357,7 +354,6 @@
     renderUsers(users, orders);
     renderMessages(messages);
     renderReviews(reviews, products);
-    const categoryRows = client ? (await client.from("categories").select("id,name,slug,is_active,sort_order").order("sort_order",{ascending:true}).order("name",{ascending:true})).data || [] : [];
     renderCategoryManager(categoryRows);
     syncProductCategorySelect(categoryRows);
     renderRecentOrders(orders);
