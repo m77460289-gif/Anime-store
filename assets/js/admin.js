@@ -84,7 +84,7 @@
       <section class="admin-view" data-admin-view="reviews"><div class="admin-card admin-list-card"><h3>نظرات ثبت‌شده</h3><div id="adminReviews"></div></div></section>
       <section class="admin-view" data-admin-view="reports">
         <div class="admin-card admin-report-card">
-          <div class="admin-report-heading"><div><h3>گزارش عملکرد فروشگاه</h3><p class="muted">آمار بر اساس سفارش‌های ذخیره‌شده در همین مرورگر</p></div><label>بازه گزارش <select id="adminReportRange"><option value="7">۷ روز اخیر</option><option value="30" selected>۳۰ روز اخیر</option><option value="all">تمام مدت</option></select></label></div>
+          <div class="admin-report-heading"><div><h3>گزارش عملکرد فروشگاه</h3><p class="muted">آمار بر اساس سفارش‌های ثبت‌شده در پایگاه داده</p></div><label>بازه گزارش <select id="adminReportRange"><option value="7">۷ روز اخیر</option><option value="30" selected>۳۰ روز اخیر</option><option value="all">تمام مدت</option></select></label></div>
           <div id="adminReportStats" class="admin-report-stats"></div>
           <div class="admin-report-columns"><section><h4>فروش در بازه انتخابی</h4><div id="adminRevenueChart"></div></section><section><h4>محصولات پرفروش</h4><div id="adminTopProducts"></div></section></div>
           <section class="admin-report-status"><h4>وضعیت سفارش‌ها</h4><div id="adminStatusBreakdown"></div></section>
