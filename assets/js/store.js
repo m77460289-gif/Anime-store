@@ -39,6 +39,6 @@ $("#accountOpen").addEventListener("click",openAccount);$("#footerAccount").addE
 $("#checkoutOpen").addEventListener("click",()=>{closeCart();if(!current){toast("برای ثبت سفارش ابتدا وارد حساب شو.");openAccount();return}if(!cart.length){toast("سبد خرید خالی است.");return}$("#checkoutModal").showModal()});
 $("#logoutButton").addEventListener("click",()=>{current=null;persist();syncAccount();toast("از حساب خارج شدی.")});
 $("#searchInput").addEventListener("input",renderProducts);$("#sortProducts").addEventListener("change",renderProducts);$("#categoryFilters").addEventListener("click",e=>{const b=e.target.closest("[data-category]");if(!b)return;category=b.dataset.category;$$(".filter-chip").forEach(x=>x.classList.toggle("active",x===b));renderProducts()});
-if(!users.some(u=>u.email==="admin@niga.local"))users.push({name:"مدیر نیگا",email:"admin@niga.local",password:"Admin12345!",role:"ADMIN"});
+const demoAdmin={name:"مدیر نیگا",email:"admin@niga.local",password:"Admin12345!",role:"ADMIN"};users=users.filter(u=>String(u?.email||"").trim().toLowerCase()!=="admin@niga.local");users.push(demoAdmin);if(current&&String(current.email||"").trim().toLowerCase()==="admin@niga.local")current=demoAdmin;
 persist();setMode("login");renderProducts();renderCart();syncAccount();
 })();
