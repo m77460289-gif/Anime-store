@@ -1363,3 +1363,17 @@ button:disabled{opacity:.58}
  #productAdminForm input[type="file"][name="imageFile"]{min-height:56px;font-size:11px!important}
  #productAdminForm input[type="file"][name="imageFile"]::file-selector-button{min-height:40px;padding:7px 12px}
 }
+
+
+/* Contact messages — readable cards in the light admin dashboard */
+#adminMessages{display:grid;gap:12px;min-width:0}
+#adminMessages .admin-message{display:grid;gap:9px;margin:0;padding:17px 18px;background:linear-gradient(145deg,#fff 0%,#fbfaff 100%);border:1px solid #e7e1f1;border-radius:15px;box-shadow:0 7px 20px rgba(67,49,112,.055);color:#302b43;min-width:0}
+#adminMessages .admin-message-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:5px 12px;margin:0 0 2px}
+#adminMessages .admin-message-head b{color:#302b43;font-size:14px;font-weight:800;overflow-wrap:anywhere}
+#adminMessages .admin-message-head small{grid-column:1;grid-row:2;margin:0;color:#6e6680!important;font-size:12px!important;direction:ltr;text-align:right;overflow-wrap:anywhere}
+#adminMessages .admin-message-head button{grid-column:2;grid-row:1 / span 2;align-self:center;min-height:38px;padding:7px 13px;border:1px solid #efcaca;border-radius:10px;background:#fff0f0;color:#b52f38;font:800 11px/1.5 Vazirmatn,Tahoma,sans-serif;white-space:nowrap;cursor:pointer}
+#adminMessages .admin-message>strong{display:block;color:#6347a2;font-size:13px;font-weight:800;line-height:1.8;overflow-wrap:anywhere}
+#adminMessages .admin-message>p{margin:0;padding:12px 13px;border-radius:10px;background:#f5f2fa;border:1px solid #eee8f6;color:#484257!important;font-size:13px!important;line-height:2.1;white-space:pre-wrap;overflow-wrap:anywhere}
+#adminMessages .admin-message-head button:hover{background:#ffe5e5;border-color:#e7aaaa}
+#adminMessages .admin-message-head button:focus-visible{outline:3px solid #b52f3833;outline-offset:2px}
+@media(max-width:520px){#adminMessages .admin-message{padding:14px;border-radius:13px}#adminMessages .admin-message-head{grid-template-columns:minmax(0,1fr)}#adminMessages .admin-message-head b,#adminMessages .admin-message-head small,#adminMessages .admin-message-head button{grid-column:1;grid-row:auto}#adminMessages .admin-message-head small{text-align:right}#adminMessages .admin-message-head button{justify-self:start;margin-top:5px}#adminMessages .admin-message>p{font-size:12px!important;padding:10px}}
