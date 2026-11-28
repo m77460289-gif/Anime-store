@@ -43,6 +43,7 @@
         <button type="button" class="admin-tab" data-admin-tab="products">مدیریت محصولات</button>
         <button type="button" class="admin-tab" data-admin-tab="orders">مدیریت سفارش‌ها</button>
         <button type="button" class="admin-tab" data-admin-tab="customers">مشتریان</button>
+        <button type="button" class="admin-tab" data-admin-tab="categories">مدیریت دسته‌بندی‌ها</button>
         <button type="button" class="admin-tab" data-admin-tab="messages">پیام‌های دریافتی</button>
         <button type="button" class="admin-tab" data-admin-tab="reports">گزارش فروش</button>
         <button type="button" class="admin-tab" data-admin-tab="coupons">کدهای تخفیف</button>
@@ -70,6 +71,20 @@
         <div class="admin-card admin-list-card">
           <h3>فهرست مشتریان</h3>
           <div id="adminUsers"></div>
+        </div>
+      </section>
+      <section class="admin-view" data-admin-view="categories">
+        <div class="admin-card admin-category-card">
+          <h3>افزودن دسته‌بندی جدید</h3>
+          <form id="adminCategoryForm" class="admin-category-form">
+            <label>نام دسته‌بندی<input name="name" required maxlength="60" placeholder="مثلاً فیگور و اکشن فیگور"></label>
+            <button class="button button-primary" type="submit">افزودن دسته‌بندی</button>
+            <p id="adminCategoryFeedback" class="form-feedback" aria-live="polite"></p>
+          </form>
+        </div>
+        <div class="admin-card admin-list-card">
+          <h3>دسته‌بندی‌های فروشگاه</h3>
+          <div id="adminCategoryList"></div>
         </div>
       </section>
       <section class="admin-view" data-admin-view="messages">
@@ -257,6 +272,44 @@
     }).join("");
   }
 
+  function syncProductCategorySelect(categories) {
+    const select = document.querySelector('#productAdminForm select[name="category"]');
+    if (!select) return;
+    const current = select.value;
+    const active = categories.filter(item => item.is_active !== false);
+    select.innerHTML = active.map(item => '<option value="'+esc(item.name)+'">'+esc(item.name)+'</option>').join("");
+    if (current && !active.some(item => item.name === current)) {
+      const inactive = categories.find(item => item.name === current);
+      if (inactive) select.insertAdjacentHTML("beforeend", '<option value="'+esc(inactive.name)+'" disabled>'+esc(inactive.name)+' (غیرفعال)</option>');
+    }
+    if (current && [...select.options].some(option => option.value === current)) select.value = current;
+  }
+
+  function renderCategoryManager(categories) {
+    const target = $("#adminCategoryList");
+    if (!target) return;
+    target.innerHTML = categories.length ? '<div class="admin-category-list">'+categories.map(item => `
+      <article class="admin-category-row">
+        <div class="admin-category-info"><b>${esc(item.name)}</b><span class="admin-category-status ${item.is_active===false?"inactive":"active"}">${item.is_active===false?"غیرفعال":"فعال"}</span></div>
+        <div class="admin-category-actions">
+          <button type="button" data-category-edit="${esc(item.id)}">ویرایش نام</button>
+          <button type="button" data-category-toggle="${esc(item.id)}" data-active="${String(item.is_active!==false)}">${item.is_active===false?"فعال‌سازی":"غیرفعال‌سازی"}</button>
+          <button type="button" class="danger" data-category-delete="${esc(item.id)}">حذف</button>
+        </div>
+      </article>`).join("")+'</div>' : '<p class="muted">هنوز دسته‌بندی‌ای ثبت نشده است.</p>';
+  }
+
+  async function refreshCategories() {
+    const client = window.nigaSupabase;
+    if (!client) throw new Error("اتصال پایگاه داده در دسترس نیست.");
+    const {data,error} = await client.from("categories").select("id,name,slug,is_active,sort_order").order("sort_order",{ascending:true}).order("name",{ascending:true});
+    if (error) throw error;
+    const rows = data || [];
+    renderCategoryManager(rows);
+    syncProductCategorySelect(rows);
+    return rows;
+  }
+
   function renderRecentOrders(orders) {
     const target = $("#adminRecentOrders");
     const recent = orders.slice().sort((a, b) => Number(b.id) - Number(a.id)).slice(0, 5);
@@ -279,14 +332,16 @@
     const client = window.nigaSupabase;
     if (client) {
       try {
-        const [profileResult,messageResult,reviewResult] = await Promise.all([
+        const [profileResult,messageResult,reviewResult,categoryResult] = await Promise.all([
           client.from("profiles").select("id,full_name,phone,role,created_at").order("created_at",{ascending:false}),
           client.from("support_messages").select("id,user_id,customer_name,customer_email,subject,message,status,created_at").order("created_at",{ascending:false}),
-          client.from("reviews").select("id,product_id,user_id,rating,comment,is_approved,created_at").order("created_at",{ascending:false})
+          client.from("reviews").select("id,product_id,user_id,rating,comment,is_approved,created_at").order("created_at",{ascending:false}),
+          client.from("categories").select("id,name,slug,is_active,sort_order").order("sort_order",{ascending:true}).order("name",{ascending:true})
         ]);
         if (profileResult.error) throw profileResult.error;
         if (messageResult.error) throw messageResult.error;
         if (reviewResult.error) throw reviewResult.error;
+        if (categoryResult.error) throw categoryResult.error;
         users = (profileResult.data||[]).map(u=>({id:u.id,name:u.full_name||"مشتری",email:u.id,phone:u.phone,role:u.role==="admin"?"ADMIN":"CUSTOMER"}));
         messages = (messageResult.data||[]).map(m=>({id:m.id,name:m.customer_name,email:m.customer_email,subject:m.subject,message:m.message,createdAt:m.created_at,status:m.status}));
         reviews = (reviewResult.data||[]).map(r=>({id:r.id,productId:r.product_id,userEmail:r.user_id,name:"مشتری · "+String(r.user_id).slice(0,8),rating:r.rating,comment:r.comment,approved:r.is_approved,createdAt:new Date(r.created_at).getTime()}));
@@ -302,6 +357,9 @@
     renderUsers(users, orders);
     renderMessages(messages);
     renderReviews(reviews, products);
+    const categoryRows = client ? (await client.from("categories").select("id,name,slug,is_active,sort_order").order("sort_order",{ascending:true}).order("name",{ascending:true})).data || [] : [];
+    renderCategoryManager(categoryRows);
+    syncProductCategorySelect(categoryRows);
     renderRecentOrders(orders);
     renderReports(products, orders, users);
   }
@@ -313,6 +371,48 @@
       render();
       return;
     }
+    const categoryEdit = event.target.closest("[data-category-edit]");
+    if (categoryEdit && isAdmin()) {
+      const current = categoryEdit.closest(".admin-category-row")?.querySelector(".admin-category-info b")?.textContent || "";
+      const name = prompt("نام جدید دسته‌بندی را وارد کن:", current);
+      if (name === null) return;
+      const clean = name.trim();
+      if (clean.length < 2 || clean.length > 60) { alert("نام دسته‌بندی باید بین ۲ تا ۶۰ نویسه باشد."); return; }
+      (async()=>{try{
+        const {error}=await window.nigaSupabase.from("categories").update({name:clean}).eq("id",categoryEdit.dataset.categoryEdit);
+        if(error)throw error;
+        await window.nigaReloadCatalog?.();
+        await render();
+      }catch(error){alert("ویرایش دسته‌بندی انجام نشد: "+(error.message||"خطای سرور"));}})();
+      return;
+    }
+    const categoryToggle = event.target.closest("[data-category-toggle]");
+    if (categoryToggle && isAdmin()) {
+      categoryToggle.disabled=true;
+      (async()=>{try{
+        const {error}=await window.nigaSupabase.from("categories").update({is_active:categoryToggle.dataset.active!=="true"}).eq("id",categoryToggle.dataset.categoryToggle);
+        if(error)throw error;
+        await window.nigaReloadCatalog?.();
+        await render();
+      }catch(error){alert("تغییر وضعیت دسته‌بندی انجام نشد: "+(error.message||"خطای سرور"));categoryToggle.disabled=false;}})();
+      return;
+    }
+    const categoryDelete = event.target.closest("[data-category-delete]");
+    if (categoryDelete && isAdmin()) {
+      if(!confirm("این دسته‌بندی حذف شود؟ اگر محصولی به آن وابسته باشد، باید ابتدا دسته‌بندی را غیرفعال کنی."))return;
+      categoryDelete.disabled=true;
+      (async()=>{try{
+        const {count,error:countError}=await window.nigaSupabase.from("products").select("id",{count:"exact",head:true}).eq("category_id",categoryDelete.dataset.categoryDelete);
+        if(countError)throw countError;
+        if(count>0){alert("این دسته‌بندی به "+count+" محصول متصل است. برای جلوگیری از خراب‌شدن محصولات، آن را غیرفعال کن.");categoryDelete.disabled=false;return;}
+        const {error}=await window.nigaSupabase.from("categories").delete().eq("id",categoryDelete.dataset.categoryDelete);
+        if(error)throw error;
+        await window.nigaReloadCatalog?.();
+        await render();
+      }catch(error){alert("حذف دسته‌بندی انجام نشد: "+(error.message||"خطای سرور"));categoryDelete.disabled=false;}})();
+      return;
+    }
+
     const deleteReview = event.target.closest("[data-delete-review]");
     if (deleteReview && isAdmin()) {
       deleteReview.disabled = true;
@@ -336,7 +436,29 @@
     if (event.target.id === "adminReportRange") render();
   });
 
-  document.addEventListener("submit", event => {
+  document.addEventListener("submit", async event => {
+    if (event.target.id === "adminCategoryForm") {
+      event.preventDefault();
+      if (!isAdmin()) return;
+      const form=event.target, input=form.elements.name, feedback=$("#adminCategoryFeedback"), name=String(input.value||"").trim();
+      if(name.length<2||name.length>60){feedback.textContent="نام دسته‌بندی باید بین ۲ تا ۶۰ نویسه باشد.";return;}
+      const button=form.querySelector('button[type="submit"]');button.disabled=true;feedback.textContent="در حال ذخیره دسته‌بندی...";
+      try{
+        const client=window.nigaSupabase;
+        const {data:existing,error:lookupError}=await client.from("categories").select("id,name").ilike("name",name).limit(1);
+        if(lookupError)throw lookupError;
+        if(existing?.length){throw new Error("این دسته‌بندی قبلاً ثبت شده است.");}
+        const {data:all,error:allError}=await client.from("categories").select("sort_order").order("sort_order",{ascending:false}).limit(1);
+        if(allError)throw allError;
+        const {error}=await client.from("categories").insert({name,slug:"category-"+crypto.randomUUID().slice(0,12),is_active:true,sort_order:(Number(all?.[0]?.sort_order)||0)+1});
+        if(error)throw error;
+        form.reset();feedback.textContent="دسته‌بندی با موفقیت اضافه شد.";
+        await window.nigaReloadCatalog?.();
+        await render();
+      }catch(error){feedback.textContent=error.message||"افزودن دسته‌بندی انجام نشد.";}
+      finally{button.disabled=false;}
+      return;
+    }
     if (event.target.id === "productAdminForm") setTimeout(render, 0);
   });
   document.addEventListener("change", event => {
