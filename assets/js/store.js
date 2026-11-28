@@ -131,8 +131,32 @@ async function checkout(e){
   console.error("Checkout:",error);
  }finally{if(submit)submit.disabled=false}
 }
-function contact(e){e.preventDefault();const f=new FormData(e.currentTarget),m={id:Date.now(),name:f.get("name"),email:f.get("email"),subject:f.get("subject"),message:f.get("message"),createdAt:new Date().toISOString()};messages.push(m);persist();$("#contactFeedback").textContent="پیامت در مرورگر ذخیره شد. ممنون از ارتباطت!";e.currentTarget.reset()}
-document.addEventListener("submit",e=>{const form=e.target.closest("[data-review-form]");if(!form)return;e.preventDefault();if(!current){toast("برای ثبت نظر ابتدا وارد حساب شو.");openAccount();return}const productId=String(form.dataset.reviewForm),data=new FormData(form),comment=String(data.get("comment")||"").trim(),rating=Number(data.get("rating"));if(comment.length<3||comment.length>700||rating<1||rating>5){toast("متن نظر یا امتیاز معتبر نیست.");return}const existing=reviews.find(r=>String(r.productId)===String(productId)&&r.userEmail===current.email);const review={id:existing?.id||Date.now(),productId,userEmail:current.email,name:current.name,rating,comment,createdAt:Date.now()};if(existing)Object.assign(existing,review);else reviews.push(review);persist();renderProducts();toast(existing?"نظرت به‌روزرسانی شد.":"نظرت ثبت شد؛ ممنون از همراهیت!");});
+async function contact(e){
+ e.preventDefault();
+ const form=e.currentTarget,feedback=$("#contactFeedback"),f=new FormData(form),client=window.nigaSupabase;
+ if(!current||!client){feedback.textContent="برای ارسال پیام ابتدا وارد حساب کاربری شو.";openAccount();return}
+ const subject=String(f.get("subject")||"").trim(),message=String(f.get("message")||"").trim();
+ if(subject.length<2||message.length<5){feedback.textContent="موضوع و متن پیام را کامل وارد کن.";return}
+ const button=form.querySelector('button[type="submit"]');if(button)button.disabled=true;
+ feedback.textContent="در حال ارسال پیام به پشتیبانی...";
+ try{
+  const {error}=await client.from("support_messages").insert({user_id:current.id,customer_name:current.name,customer_email:current.email,subject,message});
+  if(error)throw error;
+  feedback.textContent="پیامت با موفقیت برای پشتیبانی ارسال شد.";form.reset();
+ }catch(error){feedback.textContent=error.message||"ارسال پیام انجام نشد."}
+ finally{if(button)button.disabled=false}
+}
+document.addEventListener("submit",async e=>{
+ const form=e.target.closest("[data-review-form]");if(!form)return;e.preventDefault();
+ if(!current||!window.nigaSupabase){toast("برای ثبت نظر ابتدا وارد حساب شو.");openAccount();return}
+ const productId=String(form.dataset.reviewForm),data=new FormData(form),comment=String(data.get("comment")||"").trim(),rating=Number(data.get("rating"));
+ if(comment.length<3||comment.length>700||rating<1||rating>5){toast("متن نظر یا امتیاز معتبر نیست.");return}
+ try{
+  const {error}=await window.nigaSupabase.from("reviews").insert({product_id:productId,user_id:current.id,rating,comment,is_approved:false});
+  if(error)throw error;
+  toast("دیدگاهت ثبت شد و پس از تأیید مدیر نمایش داده می‌شود.");
+ }catch(error){toast(error.message||"ثبت دیدگاه انجام نشد.")}
+});
 document.addEventListener("click",e=>{const login=e.target.closest("[data-review-login]");if(login){openAccount();return}const fav=e.target.closest("[data-favorite]");if(fav){const id=String(fav.dataset.favorite);favorites=favorites.map(String).includes(id)?favorites.filter(x=>String(x)!==id):[...favorites,id];renderProducts();toast(favorites.map(String).includes(id)?"به علاقه‌مندی‌ها اضافه شد.":"از علاقه‌مندی‌ها حذف شد.");return}const a=e.target.closest("[data-add]");if(a){add(a.dataset.add);return}const q=e.target.closest("[data-qty]");if(q){const id=String(q.dataset.qty),item=cart.find(x=>String(x.id)===id);if(item){item.qty+=Number(q.dataset.delta);if(item.qty<1)cart=cart.filter(x=>String(x.id)!==id);renderCart()}return}const r=e.target.closest("[data-remove]");if(r){cart=cart.filter(x=>String(x.id)!==String(r.dataset.remove));renderCart();return}const c=e.target.closest("[data-close]");if(c){$("#"+c.dataset.close).close();return}const edit=e.target.closest("[data-edit-product]");if(edit){editProduct(edit.dataset.editProduct);return}const del=e.target.closest("[data-delete-product]");if(del&&current?.role==="ADMIN"){deactivateProduct(del.dataset.deleteProduct)}});
 document.addEventListener("click",e=>{const card=e.target.closest("[data-product-card]");if(!card||e.target.closest("button,a,input,textarea,select,summary,form,details"))return;location.href="product.html?id="+encodeURIComponent(card.dataset.productCard)});
 document.addEventListener("keydown",e=>{const card=e.target.closest("[data-product-card]");if(card&&!e.target.closest("button,a,input,textarea,select,summary,form,details")&&(e.key==="Enter"||e.key===" ")){e.preventDefault();location.href="product.html?id="+encodeURIComponent(card.dataset.productCard)}});
