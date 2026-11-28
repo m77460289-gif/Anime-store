@@ -25,30 +25,50 @@ label{display:grid;gap:8px;font-size:12px;font-weight:700;color:#5e596f}input{wi
 </head>
 <body>
 <header class="topbar"><a class="brand" href="../index.html?store=1">NIGA<small>مدیریت فروشگاه</small></a><div class="top-actions"><a href="../index.html?store=1">مشاهده فروشگاه</a><button id="logout" type="button" hidden>خروج از پنل</button></div></header>
-<main id="loginView"><section class="login-card"><div class="mark">N</div><p class="kicker">ناحیه امن مدیریت</p><h1>ورود به پنل نیگا</h1><p class="hint">برای دسترسی به مدیریت فروشگاه، رمز مدیر را وارد کن.</p><form id="loginForm"><label for="adminPassword">رمز عبور مدیر<input id="adminPassword" name="password" type="password" autocomplete="current-password" required autofocus></label><button class="submit" type="submit">ورود به پنل مدیریت</button><p class="feedback" id="feedback" role="alert"></p></form><p class="security-note">ورود در همین مرورگر حفظ می‌شود و فقط با زدن دکمهٔ خروج، دوباره رمز درخواست خواهد شد.</p></section></main>
+<main id="loginView"><section class="login-card"><div class="mark">N</div><p class="kicker">ناحیه امن مدیریت</p><h1>ورود به پنل نیگا</h1><p class="hint">با ایمیل و رمز عبور حساب تأییدشدهٔ مدیر وارد شو.</p><form id="loginForm"><label for="adminEmail">ایمیل مدیر<input id="adminEmail" name="email" type="email" autocomplete="username" required autofocus dir="ltr" placeholder="name@example.com"></label><label for="adminPassword" style="margin-top:14px">رمز عبور<input id="adminPassword" name="password" type="password" autocomplete="current-password" required></label><button class="submit" id="loginSubmit" type="submit">ورود به پنل مدیریت</button><p class="feedback" id="feedback" role="alert"></p></form><p class="security-note">دسترسی مدیر از جدول profiles در پایگاه داده بررسی می‌شود؛ نقش ذخیره‌شده در مرورگر مبنای مجوز نیست.</p></section></main>
 <section id="adminApp"><iframe class="admin-frame" title="پنل مدیریت فروشگاه نیگا" src="../index.html?admin=1&v=20261128-admin-route-v1#adminSection"></iframe></section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/supabase-client.js?v=20261128-supabase-auth-v1"></script>
 <script>
 (function(){
 "use strict";
-const KEY="niga-demo-current-user";
-const AUTH_KEY="niga-admin-route-auth-v1";
-const DEFAULT_ADMIN={name:"مدیر نیگا",email:"admin@niga.local",password:"Admin12345!",role:"ADMIN"};
 const $=id=>document.getElementById(id);
-function current(){try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch{return null}}
-function showApp(){const ok=current()?.role==="ADMIN"&&localStorage.getItem(AUTH_KEY)==="1";$("loginView").style.display=ok?"none":"block";$("adminApp").style.display=ok?"block":"none";$("logout").hidden=!ok;if(!ok)$("adminPassword").value=""}
-$("loginForm").addEventListener("submit",function(event){
- event.preventDefault();
- const password=$("adminPassword").value;
- let users=[];try{users=JSON.parse(localStorage.getItem("niga-demo-users")||"[]")}catch{}
- const admin=users.find(user=>user&&user.role==="ADMIN"&&user.email==="admin@niga.local")||DEFAULT_ADMIN;
- if(password!==admin.password){$("feedback").textContent="رمز عبور مدیر درست نیست.";return}
- localStorage.setItem(KEY,JSON.stringify({name:admin.name||"مدیر نیگا",email:admin.email,password:admin.password,role:"ADMIN"}));
- localStorage.setItem(AUTH_KEY,"1");
- $("feedback").textContent="";showApp();
+const client=window.nigaSupabase;
+const ADMIN_CACHE="niga-demo-current-user";
+function showApp(ok){$("loginView").style.display=ok?"none":"block";$("adminApp").style.display=ok?"block":"none";$("logout").hidden=!ok;}
+async function verifyAdmin(user){
+ if(!user)return false;
+ const {data,error}=await client.from("profiles").select("id,full_name,role").eq("id",user.id).single();
+ if(error)throw error;
+ if(data.role!=="admin")return false;
+ localStorage.setItem(ADMIN_CACHE,JSON.stringify({id:user.id,name:data.full_name||user.email.split("@")[0],email:user.email,role:"ADMIN"}));
+ return true;
+}
+async function checkSession(){
+ if(!client){$("feedback").textContent=window.nigaSupabaseError||"اتصال به سرور برقرار نشد.";return}
+ try{
+  const {data,error}=await client.auth.getSession();if(error)throw error;
+  const ok=await verifyAdmin(data.session?.user);showApp(ok);
+  if(!ok&&data.session?.user)$("feedback").textContent="این حساب دسترسی مدیر ندارد.";
+ }catch(error){showApp(false);$("feedback").textContent=error.message||"بررسی دسترسی مدیر ناموفق بود."}
+}
+$("loginForm").addEventListener("submit",async function(event){
+ event.preventDefault();if(!client){$("feedback").textContent=window.nigaSupabaseError||"اتصال به سرور برقرار نشد.";return}
+ const button=$("loginSubmit");button.disabled=true;$("feedback").textContent="در حال ورود...";
+ try{
+  const email=$("adminEmail").value.trim().toLowerCase(),password=$("adminPassword").value;
+  const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;
+  const ok=await verifyAdmin(data.user);
+  if(!ok){await client.auth.signOut();localStorage.removeItem(ADMIN_CACHE);throw new Error("این حساب در نیگا نقش مدیر ندارد.")}
+  $("feedback").textContent="";showApp(true);
+ }catch(error){$("feedback").textContent=error.message==="Invalid login credentials"?"ایمیل یا رمز عبور درست نیست.":error.message||"ورود انجام نشد."}
+ finally{button.disabled=false}
 });
-$("logout").addEventListener("click",function(){localStorage.removeItem(KEY);localStorage.removeItem(AUTH_KEY);showApp();});
-window.addEventListener("storage",function(event){if(event.key===KEY)showApp()});
-showApp();
+$("logout").addEventListener("click",async function(){
+ if(client)await client.auth.signOut();localStorage.removeItem(ADMIN_CACHE);showApp(false);$("adminPassword").value="";
+});
+if(client)client.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT"){localStorage.removeItem(ADMIN_CACHE);showApp(false)}});
+checkSession();
 })();
 </script>
 </body>
