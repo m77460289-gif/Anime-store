@@ -33,7 +33,7 @@ jobs:
       - name: Prepare static website
         run: |
           mkdir -p dist
-          cp index.html admin.html product.html dist/
+          cp *.html dist/
           cp -R admin dist/admin
           cp -R assets dist/assets
           printf '{"sha":"%s"}\n' "$GITHUB_SHA" > dist/deploy-version.json
