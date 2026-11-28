@@ -21,7 +21,14 @@ if(client&&id){
  }catch(error){console.error("Could not load product from Supabase:",error)}
 }
 const product=products.find(p=>String(p.id)===id&&p.active!==false);
-const reviews=read("niga-demo-reviews",[]);
+let reviews=[];
+if(window.nigaSupabase&&id){
+ try{
+  const {data,error}=await window.nigaSupabase.from("reviews").select("id,rating,comment,created_at,user_id").eq("product_id",id).eq("is_approved",true).order("created_at",{ascending:false});
+  if(error)throw error;
+  reviews=(data||[]).map(r=>({id:r.id,productId:id,userId:r.user_id,name:"خریدار نیگا",rating:r.rating,comment:r.comment,createdAt:new Date(r.created_at).getTime()}));
+ }catch(error){console.error("Review load:",error)}
+}
 const favorites=read("niga-demo-favorites",[]).map(String);
 const current=read("niga-demo-current-user",null);
 const detail=document.getElementById("productDetail"),reviewList=document.getElementById("reviewList");
@@ -34,14 +41,27 @@ const avg=productReviews.length?productReviews.reduce((sum,r)=>sum+Number(r.rati
 const stars=n=>'<span class="review-stars" aria-label="'+number(n)+' از ۵">'+("★".repeat(Math.max(0,Math.min(5,Math.round(Number(n)||0)))))+("☆".repeat(5-Math.max(0,Math.min(5,Math.round(Number(n)||0)))))+'</span>';
 detail.innerHTML='<article class="detail-layout"><div class="detail-visual"><span class="detail-image-label">NIGA · ANIME COLLECTION</span><img src="'+esc(product.imageUrl||"assets/images/gojo-poster.webp")+'" alt="'+esc(product.name)+'" onerror="this.onerror=null;this.src=&quot;assets/images/product-poster-01.svg&quot;"></div><div class="detail-info"><div class="detail-topline"><span class="detail-category">'+esc(product.category||"محصول نیگا")+'</span><span class="detail-availability '+(available?"is-available":"is-unavailable")+'">'+(available?"● آماده سفارش":"● فعلاً قابل سفارش نیست")+'</span></div><h1>'+esc(product.name)+'</h1><div class="detail-rating">'+stars(avg)+'<span>'+ (productReviews.length?number(avg.toFixed(1))+" از ۵ · "+number(productReviews.length)+" دیدگاه":"هنوز امتیازی ثبت نشده")+'</span></div><p class="detail-description">'+esc(product.description||"محصول منتخب فروشگاه نیگا.")+'</p><div class="detail-price-row"><div class="detail-price">'+(price>0?money(price):"قیمت هنوز ثبت نشده")+'</div><span class="detail-price-caption">قیمت نهایی محصول</span></div><div class="detail-stock"><span class="detail-stock-dot"></span>'+(stockLimited?(stock>0?"موجودی: "+number(stock)+" عدد":"ناموجود"):"موجودی بدون محدودیت ثبت شده")+'</div><div class="detail-actions"><button class="button button-primary" id="detailAdd" '+(!available?"disabled":"")+'>'+(available?"افزودن به سبد خرید":"در حال حاضر قابل سفارش نیست")+'</button><button class="detail-favorite '+(liked?"is-favorite":"")+'" id="detailFavorite">'+(liked?"♥ در علاقه‌مندی‌ها":"♡ افزودن به علاقه‌مندی‌ها")+'</button></div><div class="detail-perks"><span>✓ ثبت آسان سفارش</span><span>✓ پیگیری از حساب کاربری</span><span>✓ پشتیبانی نیگا</span></div></div></article>';
 const renderReviews=()=>{
- const list=read("niga-demo-reviews",[]).filter(r=>String(r.productId)===id).sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));
+ const list=reviews.slice().sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));
  const average=list.length?list.reduce((sum,r)=>sum+Number(r.rating||0),0)/list.length:0;
  document.querySelector(".detail-section-heading").innerHTML='<div><span class="section-kicker">تجربه خریداران</span><h2>دیدگاه‌های <em>مشتریان</em></h2><p>نظرها و امتیازهایی که درباره این محصول ثبت شده‌اند.</p></div><div class="detail-review-score">'+stars(average)+'<b>'+ (list.length?number(average.toFixed(1)):"—") +'</b><small>'+number(list.length)+' دیدگاه</small></div>';
  const reviewCards=list.length?'<div class="detail-review-list">'+list.map(r=>'<article class="detail-review"><div class="detail-review-head"><div><b>'+esc(r.name||"مشتری نیگا")+'</b><small>'+((r.createdAt)?new Intl.DateTimeFormat("fa-IR",{dateStyle:"medium"}).format(new Date(Number(r.createdAt))):"")+'</small></div>'+stars(r.rating)+'</div><p>'+esc(r.comment)+'</p></article>').join("")+'</div>':'<div class="detail-empty">هنوز دیدگاهی برای این محصول ثبت نشده؛ اولین نفر باش!</div>';
  const form=current?'<form class="detail-review-form" id="detailReviewForm"><h3>نظر تو درباره این محصول</h3><label>امتیاز شما<select name="rating" required><option value="5">۵ ستاره - عالی</option><option value="4">۴ ستاره - خوب</option><option value="3">۳ ستاره - معمولی</option><option value="2">۲ ستاره - ضعیف</option><option value="1">۱ ستاره - خیلی ضعیف</option></select></label><label>متن دیدگاه<textarea name="comment" rows="4" maxlength="700" required placeholder="تجربه‌ات از این محصول را با بقیه به اشتراک بگذار..."></textarea></label><button class="button button-primary" type="submit">ثبت دیدگاه</button><p class="detail-form-feedback" id="detailReviewFeedback" role="status"></p></form>':'<div class="detail-login-prompt"><span>برای ثبت امتیاز و دیدگاه، ابتدا وارد حساب کاربری شو.</span><a class="button button-primary" href="index.html#products">رفتن به فروشگاه و ورود</a></div>';
  reviewList.innerHTML=reviewCards+form;
  const reviewForm=document.getElementById("detailReviewForm");
- reviewForm?.addEventListener("submit",e=>{e.preventDefault();const data=new FormData(reviewForm),comment=String(data.get("comment")||"").trim(),rating=Number(data.get("rating"));if(comment.length<3||comment.length>700||rating<1||rating>5){document.getElementById("detailReviewFeedback").textContent="متن دیدگاه یا امتیاز معتبر نیست.";return}const all=read("niga-demo-reviews",[]),existing=all.find(r=>String(r.productId)===id&&r.userEmail===current.email),review={id:existing?.id||Date.now(),productId:id,userEmail:current.email,name:current.name||"مشتری نیگا",rating,comment,createdAt:Date.now()};if(existing)Object.assign(existing,review);else all.push(review);write("niga-demo-reviews",all);toast(existing?"دیدگاهت به‌روزرسانی شد.":"دیدگاهت با موفقیت ثبت شد.");renderReviews()});
+ reviewForm?.addEventListener("submit",async e=>{
+ e.preventDefault();
+ const data=new FormData(reviewForm),comment=String(data.get("comment")||"").trim(),rating=Number(data.get("rating")),feedback=document.getElementById("detailReviewFeedback"),button=reviewForm.querySelector('button[type="submit"]');
+ if(comment.length<3||comment.length>700||rating<1||rating>5){feedback.textContent="متن دیدگاه یا امتیاز معتبر نیست.";return}
+ if(!window.nigaSupabase||!current?.id){feedback.textContent="برای ثبت دیدگاه ابتدا وارد حساب شو.";return}
+ button.disabled=true;feedback.textContent="در حال ثبت دیدگاه...";
+ try{
+  const {error}=await window.nigaSupabase.from("reviews").insert({product_id:id,user_id:current.id,rating,comment,is_approved:false});
+  if(error)throw error;
+  feedback.textContent="دیدگاه ثبت شد و پس از تأیید مدیر نمایش داده می‌شود.";
+  reviewForm.reset();
+ }catch(error){feedback.textContent=error.message||"ثبت دیدگاه انجام نشد."}
+ finally{button.disabled=false}
+});
 };
 renderReviews();
 document.getElementById("detailAdd")?.addEventListener("click",()=>{const cart=read("niga-demo-cart",[]),item=cart.find(x=>String(x.id)===id),qty=item?Math.max(1,Number(item.qty)||1):0;if(stockLimited&&qty>=stock){toast("موجودی کافی برای افزودن بیشتر وجود ندارد.");return}if(item)item.qty=qty+1;else cart.push({id,qty:1});write("niga-demo-cart",cart);toast("محصول به سبد خرید اضافه شد.")});
