@@ -26,7 +26,7 @@ label{display:grid;gap:8px;font-size:12px;font-weight:700;color:#5e596f}input{wi
 <body>
 <header class="topbar"><a class="brand" href="../index.html?store=1">NIGA<small>مدیریت فروشگاه</small></a><div class="top-actions"><a href="../index.html?store=1">مشاهده فروشگاه</a><button id="logout" type="button" hidden>خروج از پنل</button></div></header>
 <main id="loginView"><section class="login-card"><div class="mark">N</div><p class="kicker">ناحیه امن مدیریت</p><h1>ورود به پنل نیگا</h1><p class="hint">با ایمیل و رمز عبور حساب تأییدشدهٔ مدیر وارد شو.</p><form id="loginForm"><label for="adminEmail">ایمیل مدیر<input id="adminEmail" name="email" type="email" autocomplete="username" required autofocus dir="ltr" placeholder="name@example.com"></label><label for="adminPassword" style="margin-top:14px">رمز عبور<input id="adminPassword" name="password" type="password" autocomplete="current-password" required></label><button class="submit" id="loginSubmit" type="submit">ورود به پنل مدیریت</button><p class="feedback" id="feedback" role="alert"></p></form><p class="security-note">دسترسی مدیر از جدول profiles در پایگاه داده بررسی می‌شود؛ نقش ذخیره‌شده در مرورگر مبنای مجوز نیست.</p></section></main>
-<section id="adminApp"><iframe class="admin-frame" title="پنل مدیریت فروشگاه نیگا" src="../index.html?admin=1&v=20261128-uuid-reviews-v3#adminSection"></iframe></section>
+<section id="adminApp"><iframe class="admin-frame" title="پنل مدیریت فروشگاه نیگا" src="about:blank" id="adminFrame"></iframe></section>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"></script>
 <script src="../assets/js/supabase-client.js?v=20261128-supabase-auth-v1"></script>
 <script>
@@ -35,7 +35,21 @@ label{display:grid;gap:8px;font-size:12px;font-weight:700;color:#5e596f}input{wi
 const $=id=>document.getElementById(id);
 const client=window.nigaSupabase;
 const ADMIN_CACHE="niga-demo-current-user";
-function showApp(ok){$("loginView").style.display=ok?"none":"block";$("adminApp").style.display=ok?"block":"none";$("logout").hidden=!ok;}
+function showApp(ok){
+  $("loginView").style.display=ok?"none":"block";
+  $("adminApp").style.display=ok?"block":"none";
+  $("logout").hidden=!ok;
+  const frame=$("adminFrame");
+  if(ok){
+    if(frame.dataset.loaded!=="yes"){
+      frame.src="../index.html?admin=1&v=20261128-orders-v1#adminSection";
+      frame.dataset.loaded="yes";
+    }
+  }else{
+    frame.src="about:blank";
+    delete frame.dataset.loaded;
+  }
+ }
 async function verifyAdmin(user){
  if(!user)return false;
  const {data,error}=await client.from("profiles").select("id,full_name,role").eq("id",user.id).single();
