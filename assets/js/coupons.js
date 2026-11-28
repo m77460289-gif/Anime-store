@@ -47,6 +47,8 @@ function jalaliDateToGregorian(value){
  if(!start)throw new Error("تبدیل تاریخ انجام نشد؛ تاریخ را بررسی کن.");
  const offset=(jm<=6?(jm-1)*31:(6*31)+(jm-7)*30)+jd-1;
  start.setUTCDate(start.getUTCDate()+offset);
+ const check=Object.fromEntries(calendar.formatToParts(start).filter(p=>p.type!=="literal").map(p=>[p.type,Number(p.value)]));
+ if(check.year!==jy||check.month!==jm||check.day!==jd)throw new Error("این روز در تقویم شمسی معتبر نیست.");
  const gy=start.getUTCFullYear(),gm=String(start.getUTCMonth()+1).padStart(2,"0"),gd=String(start.getUTCDate()).padStart(2,"0");
  return gy+"-"+gm+"-"+gd;
 }
