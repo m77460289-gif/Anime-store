@@ -639,3 +639,15 @@ body{line-height:1.85}
 @media(prefers-reduced-motion:reduce){
   .admin-stats .admin-stat,.admin-tab{transition:none}
 }
+
+/* Admin coupon form */
+.admin-coupon-card{display:grid;gap:18px}
+.admin-coupon-card h3{margin:0;color:#39334d;font-size:17px;font-weight:800}
+.admin-coupon-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;align-items:end}
+.admin-coupon-form label{display:grid;gap:8px;min-width:0;color:#625b73;font-size:12px;font-weight:700}
+.admin-coupon-form input,.admin-coupon-form select{width:100%;min-width:0;min-height:46px;padding:11px 13px;border:1px solid #e5dfef;border-radius:12px;background:#faf9fd;color:#39354b;font:inherit;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s,background .2s}
+.admin-coupon-form input:focus,.admin-coupon-form select:focus{border-color:#a88fe9;background:#fff;box-shadow:0 0 0 3px #a88fe91c}
+.admin-coupon-form select{appearance:none;cursor:pointer;padding-left:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237657c7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center}
+.admin-coupon-form button{grid-column:1/-1;min-height:46px;border-radius:12px}
+.admin-coupon-form .form-feedback{grid-column:1/-1;margin:0;min-height:18px}
+@media(max-width:620px){.admin-coupon-form{grid-template-columns:1fr;gap:12px}.admin-coupon-form button,.admin-coupon-form .form-feedback{grid-column:auto}}
