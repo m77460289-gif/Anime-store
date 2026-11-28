@@ -10,7 +10,7 @@
 <header class="site-header"><div class="container header-inner">
 <a class="brand" href="#home"><span class="brand-mark">N</span><span class="brand-copy">NIGA<small>فروشگاه دنیای انیمه</small></span></a>
 <button class="mobile-menu" id="mobileMenu" aria-label="باز کردن منو">☰</button>
-<nav class="main-nav" id="mainNav"><a href="#home">خانه</a><a href="#products">محصولات</a><a href="#gallery">گالری</a><a href="#about">درباره نیگا</a><a href="#contact">تماس</a></nav>
+<nav class="main-nav" id="mainNav"><a href="#home">خانه</a><a href="#products">محصولات</a><a href="#gallery">گالری</a><a href="#about">درباره نیگا</a><a href="#contact">تماس</a><a href="#adminSection" id="adminNav" hidden>پنل مدیریت</a></nav>
 <div class="header-actions"><button class="icon-button" id="accountOpen">حساب کاربری</button><button class="cart-button" id="cartOpen">سبد خرید <b id="cartCount">۰</b></button></div>
 </div></header>
 <main id="home">
@@ -38,4 +38,5 @@
 <dialog class="modal checkout-modal" id="checkoutModal"><button class="modal-x" data-close="checkoutModal" aria-label="بستن">×</button><div class="modal-heading"><span class="section-kicker">تقریباً تمومه</span><h2>ثبت سفارش</h2><p>نشانی و شماره تماس را دقیق وارد کن.</p></div><form id="checkoutForm"><label>نام گیرنده<input name="fullName" required maxlength="120"></label><label>شماره موبایل<input name="phone" required type="tel" pattern="[0-9۰-۹+ -]{8,20}" maxlength="20"></label><label>نشانی کامل<textarea name="address" rows="3" required maxlength="1000"></textarea></label><label>توضیحات سفارش<textarea name="note" rows="2" maxlength="500"></textarea></label><button class="button button-primary full-button">ثبت سفارش</button><p class="form-feedback" id="checkoutFeedback"></p></form></dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="assets/js/store.js"></script>
+<script src="assets/js/admin.js"></script>
 </body></html>
