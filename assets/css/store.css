@@ -737,3 +737,21 @@ body{line-height:1.85}
 @media(max-width:520px){
   .admin-recent-order .admin-status{font-size:10px;padding:5px 9px;min-height:28px}
 }
+
+
+/* FORCE LEGIBLE STATUS TEXT IN RECENT ORDERS */
+.admin-recent-order .admin-status,
+.admin-recent-order .admin-status.shipped,
+.admin-recent-order .admin-status.pending,
+.admin-recent-order .admin-status.processing,
+.admin-recent-order .admin-status.completed,
+.admin-recent-order .admin-status.cancelled{
+  font-family:inherit!important;
+  font-weight:800!important;
+  -webkit-text-fill-color:currentColor!important;
+}
+.admin-recent-order .admin-status.shipped{color:#075985!important}
+.admin-recent-order .admin-status.pending{color:#854d0e!important}
+.admin-recent-order .admin-status.processing{color:#6b21a8!important}
+.admin-recent-order .admin-status.completed{color:#166534!important}
+.admin-recent-order .admin-status.cancelled{color:#991b1b!important}
