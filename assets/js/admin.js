@@ -46,6 +46,7 @@
         <button type="button" class="admin-tab" data-admin-tab="messages">پیام‌های دریافتی</button>
         <button type="button" class="admin-tab" data-admin-tab="reports">گزارش فروش</button>
         <button type="button" class="admin-tab" data-admin-tab="coupons">کدهای تخفیف</button>
+        <button type="button" class="admin-tab" data-admin-tab="reviews">نظرات مشتریان</button>
       </nav>
       <section class="admin-view active" data-admin-view="overview">
         <div class="admin-card admin-overview-card">
@@ -80,6 +81,7 @@
       <section class="admin-view" data-admin-view="coupons">
         <div class="admin-card admin-coupon-card"><h3>ساخت کد تخفیف</h3><form id="couponAdminForm" class="admin-coupon-form"><label>کد تخفیف<input name="code" required maxlength="40" placeholder="NIGA20"></label><label>نوع تخفیف<select name="type"><option value="percent">درصدی</option><option value="fixed">مبلغ ثابت (تومان)</option></select></label><label>مقدار تخفیف<input name="value" type="number" min="1" required></label><label>حداقل مبلغ خرید (تومان)<input name="minOrder" type="number" min="0" value="0"></label><label>سقف تعداد استفاده (۰ = نامحدود)<input name="usageLimit" type="number" min="0" value="0"></label><label>تاریخ انقضا<input name="expiresAt" type="date"></label><button class="button button-primary">ذخیره کد</button><p id="couponAdminFeedback" class="form-feedback"></p></form></div><div class="admin-card admin-list-card"><h3>کدهای ثبت‌شده</h3><div id="adminCouponList"></div></div>
       </section>
+      <section class="admin-view" data-admin-view="reviews"><div class="admin-card admin-list-card"><h3>نظرات ثبت‌شده</h3><div id="adminReviews"></div></div></section>
       <section class="admin-view" data-admin-view="reports">
         <div class="admin-card admin-report-card">
           <div class="admin-report-heading"><div><h3>گزارش عملکرد فروشگاه</h3><p class="muted">آمار بر اساس سفارش‌های ذخیره‌شده در همین مرورگر</p></div><label>بازه گزارش <select id="adminReportRange"><option value="7">۷ روز اخیر</option><option value="30" selected>۳۰ روز اخیر</option><option value="all">تمام مدت</option></select></label></div>
@@ -196,6 +198,15 @@
       </article>`).join("") : '<p class="muted">پیامی دریافت نشده است.</p>';
   }
 
+  function renderReviews(reviews, products) {
+    const target = $("#adminReviews");
+    const rows = reviews.slice().sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));
+    target.innerHTML = rows.length ? rows.map(review => {
+      const product = products.find(item => Number(item.id) === Number(review.productId));
+      return '<article class="admin-message"><div class="admin-message-head"><b>'+esc(review.name||"مشتری نیگا")+'</b><small>'+esc(product?.name||"محصول حذف‌شده")+'</small><span class="review-stars">'+("★".repeat(Math.max(0,Math.min(5,Number(review.rating)||0))))+'</span><button type="button" class="danger" data-delete-review="'+esc(review.id)+'">حذف نظر</button></div><p>'+esc(review.comment||"")+'</p></article>';
+    }).join("") : '<p class="muted">هنوز نظری ثبت نشده است.</p>';
+  }
+
   function renderReports(products, orders, users) {
     const range = $("#adminReportRange")?.value || "30";
     const now = Date.now();
@@ -280,7 +291,7 @@
       render();
       return;
     }
-    const deleteMessage = event.target.closest("[data-delete-message]");
+    const deleteReview = event.target.closest("[data-delete-review]");\n    if (deleteReview && isAdmin()) {\n      const reviews = read("niga-demo-reviews", []);\n      write("niga-demo-reviews", reviews.filter(review => String(review.id) !== deleteReview.dataset.deleteReview));\n      render();\n      return;\n    }\n    const deleteMessage = event.target.closest("[data-delete-message]");
     if (deleteMessage && isAdmin()) {
       const messages = read("niga-demo-messages", []);
       const remaining = messages.filter(message => String(message.id) !== deleteMessage.dataset.deleteMessage);
