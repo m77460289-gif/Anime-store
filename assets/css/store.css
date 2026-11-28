@@ -105,3 +105,25 @@
 .admin-order-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:#d9c8fa}
 .admin-order-status select{margin:0;min-width:160px}
 @media(max-width:700px){.admin-order{padding:12px}.admin-order-contact{display:grid;gap:6px}.admin-order-items li{align-items:flex-start}.admin-order-status select{flex:1}}
+
+
+/* Admin product layout fix */
+.admin-view[data-admin-view="products"].active{
+  display:grid;
+  grid-template-columns:minmax(260px,.85fr) minmax(0,1.15fr);
+  gap:16px;
+  align-items:start;
+}
+#adminProductFormHost{min-width:0;width:100%}
+#adminProductFormHost #productAdminForm{width:100%;min-width:0}
+.admin-view[data-admin-view="products"] .admin-list-card{width:100%;min-width:0;overflow:hidden}
+.admin-view[data-admin-view="products"] .admin-table-wrap{max-width:100%}
+.admin-table td,.admin-table th{overflow-wrap:anywhere}
+@media(max-width:900px){
+  .admin-view[data-admin-view="products"].active{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:700px){
+  .admin-view[data-admin-view="products"].active{grid-template-columns:minmax(0,1fr)}
+  #adminProductFormHost #productAdminForm{padding:16px}
+  .admin-view[data-admin-view="products"] .admin-list-card{padding:16px}
+}
