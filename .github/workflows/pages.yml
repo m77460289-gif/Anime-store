@@ -43,9 +43,11 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 2
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
         with:
           timeout: 600000
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
