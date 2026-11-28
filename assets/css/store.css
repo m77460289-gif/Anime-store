@@ -88,3 +88,20 @@
   .admin-table{min-width:650px}
   .admin-recent-order{align-items:flex-start}
 }
+
+
+/* Detailed admin order cards */
+.admin-order{display:grid;gap:12px;margin:12px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(145deg,#1b1929,#12121d);font-size:11px}
+.admin-order-heading,.admin-order-contact,.admin-order-total{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.admin-order-heading b{font-size:13px;color:#f0dfff}
+.admin-order-heading time{font-size:10px;color:var(--muted)}
+.admin-order-contact{justify-content:flex-start;color:#c9c3d6}
+.admin-order-items,.admin-order-address,.admin-order-note{padding-top:10px;border-top:1px solid var(--line)}
+.admin-order-items>strong,.admin-order-address>strong,.admin-order-note>strong{display:block;margin-bottom:7px;color:#d9c8fa}
+.admin-order-items ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.admin-order-items li{display:flex;justify-content:space-between;gap:12px;color:#c9c3d6}
+.admin-order-items li b,.admin-order-total b{color:#f0c4e9}
+.admin-order-address p,.admin-order-note p{margin:0;color:#c9c3d6;line-height:1.9;overflow-wrap:anywhere}
+.admin-order-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:#d9c8fa}
+.admin-order-status select{margin:0;min-width:160px}
+@media(max-width:700px){.admin-order{padding:12px}.admin-order-contact{display:grid;gap:6px}.admin-order-items li{align-items:flex-start}.admin-order-status select{flex:1}}
