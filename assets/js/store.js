@@ -97,7 +97,7 @@ async function checkout(e){
  if(!items.length){feedback.textContent="سبد خرید خالی است.";return}
  if(items.some(p=>!p.priceToman)){feedback.textContent="قیمت یکی از محصولات مشخص نشده است.";return}
  const f=new FormData(e.currentTarget),customerName=String(f.get("fullName")||"").trim(),phone=String(f.get("phone")||"").trim(),address=String(f.get("address")||"").trim(),note=String(f.get("note")||"").trim();
- if(customerName.length<2||address.length<8||phone.replace(/\\D/g,"").length<8){feedback.textContent="نام، شماره تماس و نشانی معتبر وارد کن.";return}
+ if(customerName.length<2||address.length<8||phone.replace(/\D/g,"").length<8){feedback.textContent="نام، شماره تماس و نشانی معتبر وارد کن.";return}
  const client=window.nigaSupabase;
  if(!client){feedback.textContent="اتصال به پایگاه داده برقرار نیست.";return}
  const submit=e.currentTarget.querySelector('button[type="submit"]');
