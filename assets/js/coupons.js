@@ -105,7 +105,7 @@ function validateExpiryInput(input,showIncomplete){
  const value=String(input.value||"").trim();
  let message="";
  if(value){
-  if(!/^\\d{4}\\/\\d{2}\\/\\d{2}$/.test(normalizeDigits(value))){
+  if(!/^\d{4}\/\d{2}\/\d{2}$/.test(normalizeDigits(value))){
    if(showIncomplete)message="تاریخ را کامل و به شکل سال/ماه/روز وارد کن.";
   }else{
    try{jalaliDateToGregorian(value)}catch(error){message=error.message||"تاریخ شمسی معتبر نیست."}
