@@ -996,3 +996,64 @@ body{line-height:1.85}
   .admin-report-stats .admin-report-stat small{font-size:11px!important}
   .admin-report-stats .admin-report-stat strong{font-size:15px!important;line-height:1.8!important}
 }
+
+
+/* NIGA GLOBAL READABILITY & LAYOUT PASS */
+:root{color-scheme:light}
+body{color:#29263a;background:#f7f7fc}
+p,small,.muted{ text-shadow:none }
+button,input,select,textarea{font-family:Vazirmatn,Tahoma,sans-serif}
+input,select,textarea{color:#302c42}
+input::placeholder,textarea::placeholder{color:#858095;opacity:1}
+button:disabled{opacity:.58}
+.container{min-width:0}
+.admin-section,.admin-section *{min-width:0}
+.admin-card,.admin-list-card,.admin-report-card,.admin-report-columns>section,.admin-report-status{
+  color:#302c42;
+}
+.admin-card h3,.admin-report-card h3,.admin-report-columns h4,.admin-report-status h4{
+  color:#302b43;font-weight:900;line-height:1.8
+}
+.admin-report-card{gap:22px}
+.admin-report-heading{align-items:center}
+.admin-report-heading h3{font-size:19px;color:#302b43}
+.admin-report-heading p{color:#69647a;font-size:12px;line-height:1.9}
+.admin-report-columns>section,.admin-report-status{
+  background:#fff!important;border-color:#e4deef!important;
+  box-shadow:0 6px 20px rgba(67,49,112,.055)
+}
+.admin-report-columns h4,.admin-report-status h4{font-size:14px}
+.admin-bar-track{background:#eeeaf6!important}
+.admin-bar-item small{color:#625b75!important;font-size:10px!important;font-weight:700}
+.admin-top-list li,.admin-status-row{color:#514b62!important;font-size:12px!important;border-color:#eae5f1!important;line-height:1.8}
+.admin-top-list li b,.admin-status-row b{color:#50358a!important}
+.admin-report-stat{overflow:hidden}
+.admin-report-stats .admin-report-stat small{overflow-wrap:anywhere}
+.admin-report-stats .admin-report-stat strong{font-variant-numeric:tabular-nums}
+.admin-table-wrap{border-radius:12px}
+.admin-table th,.admin-table td{line-height:1.9}
+.admin-card label,.contact-form label,.modal label{color:#514b62;font-weight:700}
+.admin-card input,.admin-card textarea,.admin-card select,
+.contact-form input,.contact-form textarea,.modal input,.modal textarea{
+  color:#302c42;background:#fff;border:1px solid #ded8e9
+}
+.admin-card input:focus,.admin-card textarea:focus,.admin-card select:focus,
+.contact-form input:focus,.contact-form textarea:focus,.modal input:focus,.modal textarea:focus{
+  border-color:#896bd0;box-shadow:0 0 0 3px #896bd01c
+}
+.admin-card button,.admin-card .button{line-height:1.6}
+.product-info h3,.section-heading h2,.about-copy h2,.contact-layout h2{color:#302b43}
+.product-info p,.section-heading p,.about-copy p,.contact-layout>div>p{color:#686378}
+@media(max-width:800px){
+ .admin-report-card{gap:16px}
+ .admin-report-heading{width:100%;align-items:stretch}
+ .admin-report-heading>div{min-width:0}
+ .admin-report-columns{grid-template-columns:minmax(0,1fr)!important}
+}
+@media(max-width:560px){
+ .admin-report-stats .admin-report-stat strong{overflow-wrap:anywhere;word-break:normal}
+ .admin-report-heading>label{width:100%;max-width:100%}
+ .admin-report-heading>label select{max-width:62%}
+ .admin-card{padding:16px}
+ .admin-table{font-size:11px}
+}
