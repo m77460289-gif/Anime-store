@@ -3,14 +3,23 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="فروشگاه نیگا؛ محصولات و اکسسوری‌های دنیای انیمه"><meta name="theme-color" content="#f7f7fc">
 <title>نیگا | فروشگاه دنیای انیمه</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><link rel="stylesheet" href="assets/css/store.css?v=20261128-product-image-picker-v11"><style>body.admin-only .announcement,body.admin-only .site-header,body.admin-only .site-footer,body.admin-only .overlay,body.admin-only dialog,body.admin-only .toast{display:none!important}body.admin-only main>section:not(#adminSection){display:none!important}body.admin-only #adminSection:not([hidden]){display:block!important;min-height:100vh;padding-top:35px}</style>
-</head>
-<body>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><link rel="stylesheet" href="assets/css/store.css?v=20261128-multipage-nav-v1"><style>body.admin-only .announcement,body.admin-only .site-header,body.admin-only .site-footer,body.admin-only .overlay,body.admin-only dialog,body.admin-only .toast{display:none!important}body.admin-only main>section:not(#adminSection){display:none!important}body.admin-only #adminSection:not([hidden]){display:block!important;min-height:100vh;padding-top:35px}</style>
+<style>
+.main-nav{gap:8px!important;padding:7px!important;border:1px solid #e9e4f2!important;border-radius:16px!important;background:#fff!important;box-shadow:0 5px 20px #34235a0a!important}
+.main-nav a{display:inline-flex!important;align-items:center;gap:4px;padding:10px 13px!important;border-radius:11px!important;color:#625875!important;font-weight:750!important;white-space:nowrap}
+.main-nav a:hover,.main-nav a[aria-current="page"]{background:#f1ecfb!important;color:#7657c9!important}
+.main-nav a:after{display:none!important}
+@media(max-width:700px){.main-nav{padding:14px!important}.main-nav a{width:100%;justify-content:flex-start}}
+.page-products main>.hero,.page-products main>.benefits,.page-products main>section:not(#products),.page-favorites main>.hero,.page-favorites main>.benefits,.page-favorites main>section:not(#favorites),.page-about main>.hero,.page-about main>.benefits,.page-about main>section:not(#about),.page-contact main>.hero,.page-contact main>.benefits,.page-contact main>section:not(#contact){display:none!important}
+.page-home main>section:not(.hero):not(.benefits){display:none!important}
+.page-home .hero{display:block!important}.page-home .benefits{display:block!important}
+</style></head>
+<body class="page-home">
 <div class="announcement">✦ دنیای انیمه، یک قدم نزدیک‌تر <span>فروشگاه نیگا</span></div>
 <header class="site-header"><div class="container header-inner">
 <a class="brand" href="#home"><span class="brand-mark">N</span><span class="brand-copy">NIGA<small>فروشگاه دنیای انیمه</small></span></a>
 <button class="mobile-menu" id="mobileMenu" aria-label="باز کردن منو">☰</button>
-<nav class="main-nav" id="mainNav"><a href="#home">خانه</a><a href="#products">محصولات</a><a href="#favorites">علاقه‌مندی‌ها <span class="nav-fav-count" id="favoriteCount">۰</span></a><a href="#about">درباره نیگا</a><a href="#contact">تماس</a><a href="admin.html" id="adminNav" hidden>پنل مدیریت</a></nav>
+<nav class="main-nav" id="mainNav"><a data-page="home" href="index.html" aria-current="page">خانه</a><a data-page="products" href="products.html">محصولات</a><a data-page="favorites" href="favorites.html">علاقه‌مندی‌ها <span class="nav-fav-count" id="favoriteCount">۰</span></a><a data-page="about" href="about.html">درباره نیگا</a><a data-page="contact" href="contact.html">تماس</a><a href="admin.html" id="adminNav" hidden>پنل مدیریت</a></nav>
 <div class="header-actions"><button class="icon-button" id="accountOpen">حساب کاربری</button><button class="cart-button" id="cartOpen">سبد خرید <b id="cartCount">۰</b></button></div>
 </div></header>
 <main id="home">
