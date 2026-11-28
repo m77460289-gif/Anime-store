@@ -25,6 +25,8 @@ jobs:
           node-version: "22"
       - name: Check JavaScript syntax
         run: node --check assets/js/store.js
+          node --check assets/js/admin.js
+          node --check assets/js/coupons.js
       - name: Prepare static website
         run: |
           mkdir -p dist
