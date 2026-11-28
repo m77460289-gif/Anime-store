@@ -324,6 +324,7 @@
   const observer = new MutationObserver(render);
   observer.observe(section, { attributes: true, attributeFilter: ["hidden"] });
   window.addEventListener("storage", render);
+  window.addEventListener("niga:catalog-updated", render);
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) render();
   });
